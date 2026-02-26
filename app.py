@@ -45,6 +45,9 @@ TRANSLATIONS = {
         "error_loading": "Erro ao carregar ficheiro: ",
         "error_unexpected": "Ocorreu um erro inesperado: ",
         "select_column": "Selecionar coluna para métricas",
+        "select_x_axis": "Selecionar coluna para eixo X",
+        "select_y_axis": "Selecionar coluna para eixo Y",
+        "select_columns_pdf": "Selecionar colunas para o relatório PDF",
         "about": "Sobre",
     },
     "en": {
@@ -76,6 +79,9 @@ TRANSLATIONS = {
         "error_loading": "Error loading file: ",
         "error_unexpected": "An unexpected error occurred: ",
         "select_column": "Select column for metrics",
+        "select_x_axis": "Select column for X-axis",
+        "select_y_axis": "Select column for Y-axis",
+        "select_columns_pdf": "Select columns for PDF report",
         "about": "About",
     }
 }
@@ -397,20 +403,19 @@ def calculate_key_metrics(df, selected_column):
     }
 
 
-def generate_bar_chart(df, selected_column, numeric_cols):
+def generate_bar_chart(df, x_axis_col, y_axis_col, numeric_cols):
     """
     Generate a bar chart showing top entries by value.
-    Uses first column (e.g., Product) as X-axis labels.
+    Uses selected column for X-axis labels and Y-axis values.
     """
-    primary_col = selected_column
+    primary_col = y_axis_col
     
     # Limit to max 100 rows
     max_rows = min(100, len(df))
     top_data = df.nlargest(max_rows, primary_col)
     
-    # Get first column (usually product/artigo name)
-    first_col = df.columns[0]
-    labels = top_data[first_col].astype(str).tolist()
+    # Get labels from X-axis column
+    labels = top_data[x_axis_col].astype(str).tolist()
     
     # Calculate dynamic figure size based on number of entries
     fig_height = min(6 + (max_rows / 20), 12)
@@ -424,11 +429,11 @@ def generate_bar_chart(df, selected_column, numeric_cols):
         x = range(len(top_data))
         width = 0.8 / len(numeric_cols)
         
-        for i, col in enumerate(numeric_cols[:3]):  # Max 3 columns
+        for i, col in enumerate(numeric_cols[:5]):  # Max 5 columns
             values = [float(top_data[col].iloc[j]) for j in range(len(top_data))]
             ax.bar([xi + i * width for xi in x], values, width, label=col, color=colors[i % len(colors)])
         
-        ax.set_xticks([xi + width for xi in x])
+        ax.set_xticks([xi + width * (len(numeric_cols[:5]) - 1) / 2 for xi in x])
         ax.set_xticklabels(labels, rotation=45, ha='right', fontsize=9)
         ax.legend(loc='upper right', fontsize=8)
     else:
@@ -438,9 +443,9 @@ def generate_bar_chart(df, selected_column, numeric_cols):
         ax.set_xticks(range(len(top_data)))
         ax.set_xticklabels(labels, rotation=45, ha='right', fontsize=9)
     
-    ax.set_xlabel(first_col)
-    ax.set_ylabel(primary_col)
-    ax.set_title(f'{first_col} by {primary_col} ({len(top_data)} entries)', color='#1E3A5F', fontweight='bold')
+    ax.set_xlabel(x_axis_col)
+    ax.set_ylabel(y_axis_col)
+    ax.set_title(f'{x_axis_col} by {y_axis_col} ({len(top_data)} entries)', color='#1E3A5F', fontweight='bold')
     ax.spines['top'].set_visible(False)
     ax.spines['right'].set_visible(False)
     ax.grid(axis='y', alpha=0.3)
@@ -492,8 +497,8 @@ def create_pdf(df, metrics, chart_buf, filename):
     pdf.set_font('Arial', '', 11)
     pdf.set_text_color(0, 0, 0)
     pdf.cell(60, 8, f"Total Records: {metrics['total_records']}", 0, 0, 'L')
-    pdf.cell(60, 8, f"Total Sum: ${metrics['total_sum']:,.2f}", 0, 0, 'L')
-    pdf.cell(60, 8, f"Average Value: ${metrics['average_value']:,.2f}", 0, 1, 'L')
+    pdf.cell(60, 8, f"Total Sum: {metrics['total_sum']:,.2f}", 0, 0, 'L')
+    pdf.cell(60, 8, f"Average Value: {metrics['average_value']:,.2f}", 0, 1, 'L')
     pdf.ln(10)
     
     # All Columns Info
@@ -620,7 +625,7 @@ def main():
                 st.session_state.selected_column = numeric_cols[0] if numeric_cols else None
                 st.session_state.numeric_cols = numeric_cols
             
-            # Column selector
+            # Column selector for metrics
             selected_col = st.selectbox(
                 get_translation("select_column"),
                 options=numeric_cols,
@@ -628,6 +633,32 @@ def main():
                 key="column_selector"
             )
             st.session_state.selected_column = selected_col
+            
+            # X-axis and Y-axis selectors
+            col_x, col_y = st.columns(2)
+            with col_x:
+                all_cols = df.columns.tolist()
+                x_axis_col = st.selectbox(
+                    get_translation("select_x_axis"),
+                    options=all_cols,
+                    index=0,
+                    key="x_axis_selector"
+                )
+            with col_y:
+                y_axis_col = st.selectbox(
+                    get_translation("select_y_axis"),
+                    options=numeric_cols,
+                    index=numeric_cols.index(selected_col) if selected_col in numeric_cols else 0,
+                    key="y_axis_selector"
+                )
+            
+            # Columns selector for PDF
+            pdf_columns = st.multiselect(
+                get_translation("select_columns_pdf"),
+                options=all_cols,
+                default=all_cols,
+                key="pdf_columns_selector"
+            )
             
             # Calculate metrics for selected column
             metrics = calculate_key_metrics(df, selected_col)
@@ -646,31 +677,35 @@ def main():
                 st.markdown(f"""
                 <div class="metric-card" style="animation-delay: 0.2s;">
                     <h3>{get_translation("total_sum")} ({selected_col})</h3>
-                    <p class="value green">${metrics['total_sum']:,.2f}</p>
+                    <p class="value green">{metrics['total_sum']:,.2f}</p>
                 </div>
                 """, unsafe_allow_html=True)
             with col3:
                 st.markdown(f"""
                 <div class="metric-card" style="animation-delay: 0.3s;">
                     <h3>{get_translation("average_value")} ({selected_col})</h3>
-                    <p class="value blue">${metrics['average_value']:,.2f}</p>
+                    <p class="value blue">{metrics['average_value']:,.2f}</p>
                 </div>
                 """, unsafe_allow_html=True)
             
             # Display Data Preview
             st.markdown(f'<p class="section-header" style="margin-top: 30px;">{get_translation("data_preview")}</p>', unsafe_allow_html=True)
-            st.dataframe(df.head(10), use_container_width=True)
+            st.dataframe(df[pdf_columns].head(10), use_container_width=True)
+            
+            # Get numeric columns from selected PDF columns for chart
+            chart_numeric_cols = [col for col in pdf_columns if col in numeric_cols] if pdf_columns else numeric_cols
             
             # Generate Chart
             st.markdown(f'<p class="section-header">{get_translation("chart_title")}</p>', unsafe_allow_html=True)
-            chart_buf = generate_bar_chart(df, selected_col, numeric_cols)
+            chart_buf = generate_bar_chart(df, x_axis_col, y_axis_col, chart_numeric_cols if chart_numeric_cols else numeric_cols)
             st.image(chart_buf, use_container_width=True)
             
             # Generate PDF Button
             if st.button(get_translation("generate_pdf")):
                 with st.spinner(get_translation('generating_pdf')):
-                    # Create PDF
-                    pdf_bytes = create_pdf(df, metrics, chart_buf, uploaded_file.name)
+                    # Create PDF with selected columns
+                    df_pdf = df[pdf_columns] if pdf_columns else df
+                    pdf_bytes = create_pdf(df_pdf, metrics, chart_buf, uploaded_file.name)
                     
                     # Success Message
                     st.markdown(f"""
