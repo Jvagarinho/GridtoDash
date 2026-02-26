@@ -21,10 +21,11 @@ GridToDash é uma aplicação Streamlit profissional que permite transformar fic
 ## Funcionalidades
 
 - 📊 **Upload de Ficheiros** - Suporta ficheiros Excel (.xlsx) e CSV
-- 🔢 **Seletor de Coluna** - Escolha qual coluna numérica usar para métricas
-- 📈 **Análise Automática** - Deteta colunas numéricas automaticamente
-- 📉 **Métricas Principais** - Total de registos, soma total e valor médio
-- 📊 **Gráficos Visuais** - Gráfico de barras dinâmico
+- 🔢 **Seletor de Coluna para Métricas** - Escolha qual coluna numérica usar para calcular soma e média
+- 📈 **Seletor de Eixo X** - Escolha qual coluna mostrar como labels no gráfico
+- 📉 **Seletor de Eixo Y** - Escolha qual coluna usar para valores no gráfico
+- 📊 **Gráficos Visuais** - Gráfico de barras dinâmico com suporte a múltiplas colunas
+- 📄 **Seletor de Colunas para PDF** - Escolha quais colunas incluir no relatório
 - 📄 **Relatório PDF** - Geração automática de PDF profissional
 - 🌐 **Bilingue** - Suporte para Português e Inglês
 - 🎨 **Design Moderno** - Interface bonita com animações e estilo boutique
@@ -32,10 +33,10 @@ GridToDash é uma aplicação Streamlit profissional que permite transformar fic
 ## Screenshots
 
 ### Interface Principal
-> A interface mostra o logo, seletor de idioma, upload de ficheiros, seletor de coluna, métricas, gráfico e tabela de dados.
+> A interface mostra o logo, seletor de idioma, upload de ficheiros, seletor de coluna para métricas, eixo X/Y, colunas para PDF, métricas, gráfico e tabela de dados.
 
 ### Relatório PDF Gerado
-> O PDF inclui métricas, gráfico de barras, e tabela com os dados do ficheiro.
+> O PDF inclui métricas, gráfico de barras, e tabela com os dados selecionados do ficheiro.
 
 ## Instalação
 
@@ -99,10 +100,13 @@ GridToDash/
 
 1. **Selecione o Idioma** - Use os botões PT/EN na sidebar
 2. **Carregue um Ficheiro** - Arraste ou selecione um ficheiro Excel ou CSV
-3. **Escolha a Coluna** - Selecione qual coluna numérica usar para métricas
-4. **Visualize os Dados** - See métricas, gráfico e tabela de dados
-5. **Gere o PDF** - Clique em "Gerar Relatório PDF"
-6. **Download** - Faça download do relatório gerado
+3. **Escolha a Coluna para Métricas** - Selecione qual coluna numérica usar para Total Sum e Average Value
+4. **Escolha o Eixo X** - Selecione qual coluna aparecer como labels no gráfico
+5. **Escolha o Eixo Y** - Selecione qual coluna usar para os valores no gráfico
+6. **Selecione Colunas para PDF** - Escolha quais colunas incluir no relatório
+7. **Visualize os Dados** - See métricas, gráfico e tabela de dados
+8. **Gere o PDF** - Clique em "Gerar Relatório PDF"
+9. **Download** - Faça download do relatório gerado
 
 ## Formato do Ficheiro de Entrada
 
