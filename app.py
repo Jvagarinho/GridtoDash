@@ -6,13 +6,73 @@ Excel/CSV files into polished, branded PDF reports.
 
 import os
 import tempfile
+import base64
 from datetime import datetime
 from io import BytesIO
+import json
+from urllib.parse import unquote
 
 import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
 from fpdf import FPDF
+
+# Import login module
+from login import show_login
+
+# Clerk Keys
+CLERK_SECRET_KEY = os.getenv("CLERK_SECRET_KEY", "sk_test_VLmElbYDT0MnkOr606ndALDFsYJi8LaBj2VPx2OOu4")
+CLERK_PUBLISHABLE_KEY = os.getenv("NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY", "pk_test_Y2xvc2luZy1iYXQtNjYuY2xlcmsuYWNjb3VudHMuZGV2JA")
+
+# Get the redirect URL - can be set via environment variable for production
+# For Streamlit Cloud, set this environment variable to your app's URL
+REDIRECT_URL = os.getenv("REDIRECT_URL", "https://gridtodash.streamlit.app")
+
+
+def verify_clerk_jwt(token):
+    """
+    Verify Clerk JWT and extract user email - manual decode.
+    """
+    try:
+        # URL decode the token first
+        token = unquote(token)
+        
+        # Check if it's a valid JWT format (has dots)
+        if '.' not in token:
+            return None, None
+        
+        # Manual JWT decode (base64)
+        parts = token.split('.')
+        if len(parts) < 2:
+            return None, None
+            
+        # Decode the payload (middle part)
+        payload = parts[1]
+        
+        # Add padding if needed
+        padding = 4 - (len(payload) % 4)
+        if padding != 4:
+            payload += '=' * padding
+        
+        decoded_str = base64.b64decode(payload)
+        decoded = json.loads(decoded_str)
+        
+        # Try to get email from various possible claims
+        email = decoded.get('email') or decoded.get('email_address') or decoded.get('primary_email') or decoded.get('p')
+        
+        if email:
+            return email, decoded
+        return None, decoded
+    except Exception as e:
+        return None, None
+
+
+# Initialize session state for authentication
+if "authenticated" not in st.session_state:
+    st.session_state.authenticated = False
+if "user_email" not in st.session_state:
+    st.session_state.user_email = None
+
 
 # Language Translations
 TRANSLATIONS = {
@@ -567,6 +627,86 @@ def create_pdf(df, metrics, chart_buf, filename):
 def main():
     """Main application entry point."""
     
+    # Handle language from query params - read and process
+    try:
+        # Get query params as dict
+        qp = st.query_params.to_dict()
+        if "lang" in qp:
+            lang = qp["lang"]
+            if lang in ("pt", "en"):
+                st.session_state.language = lang
+    except Exception:
+        pass
+    
+    # Check for auth params or Clerk JWT token
+    try:
+        qp = st.query_params.to_dict()
+        
+        # Check for custom auth params
+        if qp.get("auth") == "ok" and qp.get("email"):
+            st.session_state.authenticated = True
+            st.session_state.user_email = qp.get("email")
+            st.session_state.clerk_email = qp.get("email")
+            st.query_params.clear()
+            st.rerun()
+        
+        # Check for Clerk JWT token - this means successful login!
+        if "__clerk_db_jwt" in qp:
+            jwt_token = qp.get("__clerk_db_jwt")
+            
+            # Show message immediately
+            st.markdown("### A processar login do Clerk...")
+            
+            # Since the token format doesn't allow us to extract email directly,
+            # ask user to confirm their email
+            st.warning("Por favor, insere o teu email para completar o login.")
+            
+            user_email = st.text_input("Email:", key="clerk_email_confirm")
+            if user_email and st.button("Confirmar Login"):
+                st.session_state.authenticated = True
+                st.session_state.user_email = user_email
+                st.session_state.clerk_email = user_email
+                st.session_state.clerk_jwt = jwt_token
+                # Don't clear query params yet - let the page render first
+                # Then do a proper redirect
+            
+            # Don't return here - let the page render
+    except Exception as e:
+        st.error(f"Erro: {e}")
+    
+    # After setting authenticated, clear query params and show success
+    if st.session_state.get("authenticated") and st.session_state.get("user_email"):
+        # Clear query params to remove the JWT token from URL
+        try:
+            st.query_params.clear()
+        except:
+            pass
+        
+        # If we just authenticated and have query params with JWT, do a clean redirect
+        try:
+            qp = st.query_params.to_dict()
+            if "__clerk_db_jwt" in qp:
+                st.query_params.clear()
+                st.rerun()
+        except:
+            pass
+    
+    # Check authentication - show login if not authenticated
+    if not st.session_state.get("authenticated"):
+        show_login()
+        return
+    
+    # Keep session alive - load Clerk SDK for potential future use
+    
+    # Show logout button in main area
+    st.markdown(f"""
+    <div style="position: fixed; top: 10px; right: 10px; z-index: 1000;">
+        <span style="background: #1E3A5F; color: white; padding: 8px 16px; border-radius: 8px; font-size: 14px;">
+            {st.session_state.user_email}
+        </span>
+    </div>
+    """, unsafe_allow_html=True)
+    
     # Sidebar
     with st.sidebar:
         col_logo1, col_logo2, col_logo3 = st.columns([1,2,1])
@@ -590,6 +730,23 @@ def main():
         st.markdown(f"### {get_translation('about')}")
         st.markdown(get_translation("sidebar_about_text"))
         st.markdown("---")
+        
+        # Logout button
+        if st.button("Logout", use_container_width=True):
+            # Sign out from Clerk
+            st.markdown("""
+            <script>
+            if (window.Clerk) {
+                window.Clerk.signOut().then(() => {
+                    window.sessionStorage.removeItem('clerk_email');
+                    window.location.reload();
+                });
+            }
+            </script>
+            """, unsafe_allow_html=True)
+            st.session_state.authenticated = False
+            st.session_state.user_email = None
+            st.rerun()
         
         st.markdown(f"*{get_translation('sidebar_built_with')}*")
     
