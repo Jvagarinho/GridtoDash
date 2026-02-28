@@ -55,8 +55,8 @@ def verify_user_convex(email, password):
     """Verify user credentials against Convex"""
     password_hash = hash_password(password)
     
-    # Query user by email
-    result = convex_request("GET", f"/api/getUserByEmail?email={email}")
+    # Query user by email - use full path including directory
+    result = convex_request("POST", "/api/users/getUserByEmail", {"email": email})
     
     if result and "error" not in result:
         user = result.get("value") or result
@@ -71,17 +71,17 @@ def create_user_convex(email, password, name):
     password_hash = hash_password(password)
     
     # Check if user exists first
-    check_result = convex_request("GET", f"/api/getUserByEmail?email={email}")
+    check_result = convex_request("POST", "/api/users/getUserByEmail", {"email": email})
     
     if check_result and check_result.get("value"):
         return {"success": False, "error": "Email já está registado"}
     
-    # Create user using mutation
-    result = convex_request("POST", "/api/createUser", {
+    # Create user using mutation - use full path
+    result = convex_request("POST", "/api/users/createUser", {
         "email": email,
         "passwordHash": password_hash,
         "name": name,
-        "createdAt": 0  # Will be set by server
+        "createdAt": 0
     })
     
     if result and "error" not in result:
