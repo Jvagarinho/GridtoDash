@@ -9,8 +9,6 @@ import tempfile
 import base64
 from datetime import datetime
 from io import BytesIO
-import json
-from urllib.parse import unquote
 
 import streamlit as st
 import pandas as pd
@@ -20,51 +18,12 @@ from fpdf import FPDF
 # Import login module
 from login import show_login
 
-# Clerk Keys
-CLERK_SECRET_KEY = os.getenv("CLERK_SECRET_KEY", "sk_test_VLmElbYDT0MnkOr606ndALDFsYJi8LaBj2VPx2OOu4")
-CLERK_PUBLISHABLE_KEY = os.getenv("NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY", "pk_test_Y2xvc2luZy1iYXQtNjYuY2xlcmsuYWNjb3VudHMuZGV2JA")
-
 # Get the redirect URL - can be set via environment variable for production
 # For Streamlit Cloud, set this environment variable to your app's URL
 REDIRECT_URL = os.getenv("REDIRECT_URL", "https://gridtodash.streamlit.app")
 
 
-def verify_clerk_jwt(token):
-    """
-    Verify Clerk JWT and extract user email - manual decode.
-    """
-    try:
-        # URL decode the token first
-        token = unquote(token)
-        
-        # Check if it's a valid JWT format (has dots)
-        if '.' not in token:
-            return None, None
-        
-        # Manual JWT decode (base64)
-        parts = token.split('.')
-        if len(parts) < 2:
-            return None, None
-            
-        # Decode the payload (middle part)
-        payload = parts[1]
-        
-        # Add padding if needed
-        padding = 4 - (len(payload) % 4)
-        if padding != 4:
-            payload += '=' * padding
-        
-        decoded_str = base64.b64decode(payload)
-        decoded = json.loads(decoded_str)
-        
-        # Try to get email from various possible claims
-        email = decoded.get('email') or decoded.get('email_address') or decoded.get('primary_email') or decoded.get('p')
-        
-        if email:
-            return email, decoded
-        return None, decoded
-    except Exception as e:
-        return None, None
+# Initialize session state for authentication
 
 
 # Initialize session state for authentication
@@ -643,8 +602,6 @@ def main():
         show_login()
         return
     
-    # Keep session alive - load Clerk SDK for potential future use
-    
     # Show logout button in main area
     st.markdown(f"""
     <div style="position: fixed; top: 10px; right: 10px; z-index: 1000;">
@@ -680,17 +637,6 @@ def main():
         
         # Logout button
         if st.button("Logout", use_container_width=True):
-            # Sign out from Clerk
-            st.markdown("""
-            <script>
-            if (window.Clerk) {
-                window.Clerk.signOut().then(() => {
-                    window.sessionStorage.removeItem('clerk_email');
-                    window.location.reload();
-                });
-            }
-            </script>
-            """, unsafe_allow_html=True)
             st.session_state.authenticated = False
             st.session_state.user_email = None
             st.rerun()
