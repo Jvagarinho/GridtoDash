@@ -1,6 +1,6 @@
 """
-Convex authentication module for GridToDash
-Uses Convex Python SDK
+Authentication module for GridToDash
+Simple in-memory auth (can be upgraded to MongoDB later)
 """
 
 import streamlit as st
@@ -8,8 +8,10 @@ import os
 import base64
 import hashlib
 
-# Convex deployment URL - MUST match what's in Streamlit Cloud secrets
-CONVEX_URL = os.environ.get("CONVEX_URL", "https://bright-trout-229.eu-west-1.convex.cloud")
+
+# In-memory user store (for demo)
+# In production, replace with MongoDB or Convex
+USERS = {}
 
 
 def get_logo_base64():
@@ -28,67 +30,30 @@ def hash_password(password):
     return hashlib.sha256(password.encode()).hexdigest()
 
 
-def convex_request(method, path, args=None):
-    """Make request to Convex API"""
-    import httpx
-    import json
-    
-    url = f"{CONVEX_URL}{path}"
-    
-    try:
-        if method == "POST":
-            response = httpx.post(url, json=args or {}, timeout=15)
-        else:
-            response = httpx.get(url, params=args or {}, timeout=15)
-        
-        if response.status_code == 200:
-            return response.json()
-        else:
-            print(f"Convex API error: {response.status_code} - {response.text}")
-            return {"error": f"HTTP {response.status_code}"}
-    except Exception as e:
-        print(f"Convex request error: {e}")
-        return {"error": str(e)}
-
-
-def verify_user_convex(email, password):
-    """Verify user credentials against Convex"""
+def verify_user(email, password):
+    """Verify user credentials"""
     password_hash = hash_password(password)
     
-    # Query user by email - use full path including directory
-    result = convex_request("POST", "/api/users/getUserByEmail", {"email": email})
-    
-    if result and "error" not in result:
-        user = result.get("value") or result
-        if user and user.get("passwordHash") == password_hash:
-            return {"email": user["email"], "name": user.get("name", "")}
+    user = USERS.get(email)
+    if user and user["passwordHash"] == password_hash:
+        return {"email": user["email"], "name": user.get("name", "")}
     
     return None
 
 
-def create_user_convex(email, password, name):
-    """Create new user in Convex"""
-    password_hash = hash_password(password)
-    
-    # Check if user exists first
-    check_result = convex_request("POST", "/api/users/getUserByEmail", {"email": email})
-    
-    if check_result and check_result.get("value"):
+def create_user(email, password, name):
+    """Create new user"""
+    if email in USERS:
         return {"success": False, "error": "Email já está registado"}
     
-    # Create user using mutation - use full path
-    result = convex_request("POST", "/api/users/createUser", {
+    password_hash = hash_password(password)
+    USERS[email] = {
         "email": email,
         "passwordHash": password_hash,
-        "name": name,
-        "createdAt": 0
-    })
+        "name": name
+    }
     
-    if result and "error" not in result:
-        return {"success": True}
-    
-    error_msg = result.get("error", "Erro desconhecido") if result else "Erro de conexão"
-    return {"success": False, "error": error_msg}
+    return {"success": True}
 
 
 def show_login():
@@ -101,9 +66,6 @@ def show_login():
         subtitle = "Transforme os seus ficheiros Excel/CSV em relatórios PDF profissionais"
     else:
         subtitle = "Transform your Excel/CSV files into professional PDF reports"
-    
-    # Debug info
-    st.caption(f"Debug: Convex URL = {CONVEX_URL}")
     
     # Center everything with columns
     col1, col2, col3 = st.columns([1, 3, 1])
@@ -127,8 +89,8 @@ def show_login():
         
         if st.button("Entrar", type="primary"):
             if email and password:
-                # Verify against Convex
-                user = verify_user_convex(email, password)
+                # Verify user
+                user = verify_user(email, password)
                 if user:
                     st.session_state.authenticated = True
                     st.session_state.user_email = user["email"]
@@ -154,8 +116,8 @@ def show_login():
                 elif len(new_password) < 6:
                     st.error("A password deve ter pelo menos 6 caracteres")
                 else:
-                    # Create user in Convex
-                    result = create_user_convex(new_email, new_password, new_email.split("@")[0])
+                    # Create user
+                    result = create_user(new_email, new_password, new_email.split("@")[0])
                     if result and result.get("success"):
                         st.session_state.authenticated = True
                         st.session_state.user_email = new_email
