@@ -43,9 +43,10 @@ def convex_query(query_name, args=None):
         response = httpx.post(url, json=payload, timeout=15)
         if response.status_code == 200:
             return response.json()
+        print(f"Convex query error: {response.status_code} - {response.text}")
         return None
     except Exception as e:
-        print(f"Convex query error: {e}")
+        print(f"Convex query exception: {e}")
         return None
 
 
@@ -91,6 +92,8 @@ def create_user_convex(email, password, name):
     
     # First check if user exists
     existing = convex_query("getUserByEmail", {"email": email})
+    print(f"Check existing user result: {existing}")
+    
     if existing and existing.get("value"):
         return {"success": False, "error": "User already exists"}
     
@@ -100,6 +103,7 @@ def create_user_convex(email, password, name):
         "passwordHash": password_hash,
         "name": name
     })
+    print(f"Create user result: {result}")
     
     if result and result.get("value"):
         return {"success": True}
