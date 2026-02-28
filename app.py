@@ -638,59 +638,6 @@ def main():
     except Exception:
         pass
     
-    # Check for auth params or Clerk JWT token
-    try:
-        qp = st.query_params.to_dict()
-        
-        # Check for custom auth params
-        if qp.get("auth") == "ok" and qp.get("email"):
-            st.session_state.authenticated = True
-            st.session_state.user_email = qp.get("email")
-            st.session_state.clerk_email = qp.get("email")
-            st.query_params.clear()
-            st.rerun()
-        
-        # Check for Clerk JWT token - this means successful login!
-        if "__clerk_db_jwt" in qp:
-            jwt_token = qp.get("__clerk_db_jwt")
-            
-            # Show message immediately
-            st.markdown("### A processar login do Clerk...")
-            
-            # Since the token format doesn't allow us to extract email directly,
-            # ask user to confirm their email
-            st.warning("Por favor, insere o teu email para completar o login.")
-            
-            user_email = st.text_input("Email:", key="clerk_email_confirm")
-            if user_email and st.button("Confirmar Login"):
-                st.session_state.authenticated = True
-                st.session_state.user_email = user_email
-                st.session_state.clerk_email = user_email
-                st.session_state.clerk_jwt = jwt_token
-                # Don't clear query params yet - let the page render first
-                # Then do a proper redirect
-            
-            # Don't return here - let the page render
-    except Exception as e:
-        st.error(f"Erro: {e}")
-    
-    # After setting authenticated, clear query params and show success
-    if st.session_state.get("authenticated") and st.session_state.get("user_email"):
-        # Clear query params to remove the JWT token from URL
-        try:
-            st.query_params.clear()
-        except:
-            pass
-        
-        # If we just authenticated and have query params with JWT, do a clean redirect
-        try:
-            qp = st.query_params.to_dict()
-            if "__clerk_db_jwt" in qp:
-                st.query_params.clear()
-                st.rerun()
-        except:
-            pass
-    
     # Check authentication - show login if not authenticated
     if not st.session_state.get("authenticated"):
         show_login()
