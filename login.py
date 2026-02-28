@@ -1,17 +1,39 @@
 """
 Authentication module for GridToDash
-Simple in-memory auth (can be upgraded to MongoDB later)
+Uses MongoDB for user storage
 """
 
 import streamlit as st
 import os
 import base64
 import hashlib
+from pymongo import MongoClient
 
 
-# In-memory user store (for demo)
-# In production, replace with MongoDB or Convex
-USERS = {}
+# MongoDB connection - MUST come from environment variable for security
+# Add to Streamlit Cloud secrets:
+# MONGODB_URI = "mongodb+srv://username:password@cluster.mongodb.net/?appName=AppName"
+MONGODB_URI = os.getenv("MONGODB_URI", "")
+MONGODB_DB = os.getenv("MONGODB_DB", "gridtodash")
+
+
+def get_mongo_client():
+    """Get MongoDB client"""
+    try:
+        client = MongoClient(MONGODB_URI)
+        return client
+    except Exception as e:
+        print(f"MongoDB connection error: {e}")
+        return None
+
+
+def get_users_collection():
+    """Get users collection"""
+    client = get_mongo_client()
+    if client:
+        db = client[MONGODB_DB]
+        return db.users
+    return None
 
 
 def get_logo_base64():
@@ -31,29 +53,44 @@ def hash_password(password):
 
 
 def verify_user(email, password):
-    """Verify user credentials"""
+    """Verify user credentials from MongoDB"""
     password_hash = hash_password(password)
     
-    user = USERS.get(email)
-    if user and user["passwordHash"] == password_hash:
+    collection = get_users_collection()
+    if collection is None:
+        return None
+    
+    user = collection.find_one({"email": email})
+    if user and user.get("passwordHash") == password_hash:
         return {"email": user["email"], "name": user.get("name", "")}
     
     return None
 
 
 def create_user(email, password, name):
-    """Create new user"""
-    if email in USERS:
+    """Create new user in MongoDB"""
+    collection = get_users_collection()
+    if collection is None:
+        return {"success": False, "error": "Erro de conexão com base de dados"}
+    
+    # Check if user exists
+    existing = collection.find_one({"email": email})
+    if existing:
         return {"success": False, "error": "Email já está registado"}
     
+    # Create user
     password_hash = hash_password(password)
-    USERS[email] = {
+    user_doc = {
         "email": email,
         "passwordHash": password_hash,
         "name": name
     }
     
-    return {"success": True}
+    try:
+        collection.insert_one(user_doc)
+        return {"success": True}
+    except Exception as e:
+        return {"success": False, "error": str(e)}
 
 
 def show_login():
