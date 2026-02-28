@@ -24,9 +24,6 @@ REDIRECT_URL = os.getenv("REDIRECT_URL", "https://gridtodash.streamlit.app")
 
 
 # Initialize session state for authentication
-
-
-# Initialize session state for authentication
 if "authenticated" not in st.session_state:
     st.session_state.authenticated = False
 if "user_email" not in st.session_state:
