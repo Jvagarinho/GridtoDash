@@ -11,6 +11,9 @@ import hashlib
 # Convex deployment URL
 CONVEX_URL = os.getenv("CONVEX_URL", "https://bright-trout-229.eu-west-1.convex.cloud")
 
+# Debug: print the URL being used
+print(f"Using Convex URL: {CONVEX_URL}")
+
 
 def get_logo_base64():
     try:
@@ -63,6 +66,8 @@ def convex_mutation(mutation_name, args=None):
     
     try:
         response = httpx.post(url, json=payload, timeout=15)
+        print(f"Mutation response: {response.status_code}")
+        print(f"Mutation body: {response.text[:500]}")
         if response.status_code == 200:
             return response.json()
         return None
@@ -98,15 +103,16 @@ def create_user_convex(email, password, name):
     })
     print(f"Create user result: {result}")
     
-    # Check for success
-    if result and "value" in result:
+    # Check for success - Convex returns the created ID on success
+    if result and result.get("value"):
         return {"success": True}
     
-    # Check if it's a duplicate key error
-    if result and "value" in result and result["value"] is None:
-        return {"success": False, "error": "Email já está em uso"}
+    # Check for error
+    if result:
+        error_msg = result.get("error", "Erro desconhecido")
+        return {"success": False, "error": error_msg}
     
-    return {"success": False, "error": "Erro ao criar conta"}
+    return {"success": False, "error": "Erro ao criar conta - sem resposta do servidor"}
 
 
 def show_login():
@@ -178,7 +184,8 @@ def show_login():
                         st.success("Conta criada com sucesso!")
                         st.rerun()
                     else:
-                        st.error("Erro ao criar conta. O email pode já estar em uso.")
+                        error_msg = result.get("error", "Erro desconhecido") if result else "Erro de conexão"
+                        st.error(f"Erro: {error_msg}")
             else:
                 st.error("Por favor, preenche todos os campos")
         
