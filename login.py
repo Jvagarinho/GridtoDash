@@ -23,32 +23,55 @@ LOGO_BASE64 = get_logo_base64()
 
 
 def hash_password(password):
-    """Simple password hashing"""
+    """Hash password using SHA-256"""
     return hashlib.sha256(password.encode()).hexdigest()
 
 
-def verify_user_convex(email, password):
-    """
-    Verify user credentials against Convex.
-    In production, use Convex's proper auth.
-    For now, we'll simulate with stored users.
-    """
+def call_convex_function(function_name, args=None):
+    """Call a Convex function via HTTP API"""
+    import httpx
+    import json
+    
+    url = f"{CONVEX_URL}/api/{function_name}"
+    
     try:
-        import httpx
-        
-        # Query Convex to check user
-        # This is a simplified version - in production use proper Convex auth
-        password_hash = hash_password(password)
-        
-        # For demo purposes, accept any email with password "demo123"
-        # In production, you would check against Convex database
-        if password == "demo123":
-            return {"email": email, "name": email.split("@")[0]}
-        
+        response = httpx.post(url, json=args or {}, timeout=10)
+        if response.status_code == 200:
+            return response.json()
         return None
     except Exception as e:
         print(f"Convex error: {e}")
         return None
+
+
+def verify_user_convex(email, password):
+    """Verify user credentials against Convex"""
+    password_hash = hash_password(password)
+    
+    # Call Convex verifyUser function
+    result = call_convex_function("verifyUser", {
+        "email": email,
+        "passwordHash": password_hash
+    })
+    
+    if result and result.get("success"):
+        return {"email": result["email"], "name": result.get("name", "")}
+    
+    return None
+
+
+def create_user_convex(email, password, name):
+    """Create new user in Convex"""
+    password_hash = hash_password(password)
+    
+    # Call Convex createUser function
+    result = call_convex_function("createUser", {
+        "email": email,
+        "passwordHash": password_hash,
+        "name": name
+    })
+    
+    return result
 
 
 def show_login():
@@ -111,13 +134,16 @@ def show_login():
                 elif len(new_password) < 6:
                     st.error("A password deve ter pelo menos 6 caracteres")
                 else:
-                    # In production, save to Convex database
-                    # For now, save to session state for demo
-                    st.session_state.authenticated = True
-                    st.session_state.user_email = new_email
-                    st.session_state.user_name = new_email.split("@")[0]
-                    st.success("Conta criada com sucesso!")
-                    st.rerun()
+                    # Create user in Convex
+                    result = create_user_convex(new_email, new_password, new_email.split("@")[0])
+                    if result and result.get("success"):
+                        st.session_state.authenticated = True
+                        st.session_state.user_email = new_email
+                        st.session_state.user_name = new_email.split("@")[0]
+                        st.success("Conta criada com sucesso!")
+                        st.rerun()
+                    else:
+                        st.error("Erro ao criar conta. O email pode já estar em uso.")
             else:
                 st.error("Por favor, preenche todos os campos")
         
