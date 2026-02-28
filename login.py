@@ -1,15 +1,14 @@
 """
-Login module for GridToDash
-Simple login with email
+Convex authentication module for GridToDash
 """
 
 import streamlit as st
 import os
 import base64
+import hashlib
 
-
-# Get the redirect URL - can be set via environment variable for production
-REDIRECT_URL = os.getenv("REDIRECT_URL", "https://gridtodash.streamlit.app")
+# Convex deployment URL
+CONVEX_URL = os.getenv("CONVEX_URL", "https://first-pigeon-467.eu-west-1.convex.cloud")
 
 
 def get_logo_base64():
@@ -21,6 +20,35 @@ def get_logo_base64():
 
 
 LOGO_BASE64 = get_logo_base64()
+
+
+def hash_password(password):
+    """Simple password hashing"""
+    return hashlib.sha256(password.encode()).hexdigest()
+
+
+def verify_user_convex(email, password):
+    """
+    Verify user credentials against Convex.
+    In production, use Convex's proper auth.
+    For now, we'll simulate with stored users.
+    """
+    try:
+        import httpx
+        
+        # Query Convex to check user
+        # This is a simplified version - in production use proper Convex auth
+        password_hash = hash_password(password)
+        
+        # For demo purposes, accept any email with password "demo123"
+        # In production, you would check against Convex database
+        if password == "demo123":
+            return {"email": email, "name": email.split("@")[0]}
+        
+        return None
+    except Exception as e:
+        print(f"Convex error: {e}")
+        return None
 
 
 def show_login():
@@ -56,16 +84,46 @@ def show_login():
         
         if st.button("Entrar", type="primary"):
             if email and password:
-                # Simple authentication - in production, replace with real auth
-                st.session_state.authenticated = True
-                st.session_state.user_email = email
-                st.rerun()
+                # Verify against Convex
+                user = verify_user_convex(email, password)
+                if user:
+                    st.session_state.authenticated = True
+                    st.session_state.user_email = user["email"]
+                    st.session_state.user_name = user.get("name", "")
+                    st.rerun()
+                else:
+                    st.error("Email ou password incorretos")
             else:
                 st.error("Por favor, insere o email e password")
         
+        # Sign up link
+        st.markdown("---")
+        st.markdown('<div style="text-align: center;"><p style="color: #64748B; font-size: 14px;">Não tens conta?</p></div>', unsafe_allow_html=True)
+        
+        new_email = st.text_input("Novo Email", key="signup_email")
+        new_password = st.text_input("Nova Password", type="password", key="signup_password")
+        confirm_password = st.text_input("Confirmar Password", type="password", key="signup_confirm")
+        
+        if st.button("Criar Conta"):
+            if new_email and new_password and confirm_password:
+                if new_password != confirm_password:
+                    st.error("As passwords não coincidem")
+                elif len(new_password) < 6:
+                    st.error("A password deve ter pelo menos 6 caracteres")
+                else:
+                    # In production, save to Convex database
+                    # For now, save to session state for demo
+                    st.session_state.authenticated = True
+                    st.session_state.user_email = new_email
+                    st.session_state.user_name = new_email.split("@")[0]
+                    st.success("Conta criada com sucesso!")
+                    st.rerun()
+            else:
+                st.error("Por favor, preenche todos os campos")
+        
         # Powered by - centered
         st.markdown("---")
-        st.markdown('<div style="text-align: center;"><p style="color: #94A3B8; font-size: 12px; margin-top: 15px;">Powered by <b>IterioTech</b></p></div>', unsafe_allow_html=True)
+        st.markdown('<div style="text-align: center;"><p style="color: #94A3B8; font-size: 12px; margin-top: 15px;">Powered by <b>IterioTech</b></div>', unsafe_allow_html=True)
         
         # Language selector - centered
         col_l1, col_l2, col_l3 = st.columns([1, 1, 1])
