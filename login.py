@@ -67,13 +67,13 @@ def convex_mutation(mutation_name, args=None):
     try:
         response = httpx.post(url, json=payload, timeout=15)
         print(f"Mutation response: {response.status_code}")
-        print(f"Mutation body: {response.text[:500]}")
+        print(f"Mutation body: {response.text}")
         if response.status_code == 200:
             return response.json()
-        return None
+        return {"error": f"HTTP {response.status_code}: {response.text[:200]}"}
     except Exception as e:
         print(f"Convex mutation error: {e}")
-        return None
+        return {"error": str(e)}
 
 
 def verify_user_convex(email, password):
@@ -95,7 +95,7 @@ def create_user_convex(email, password, name):
     """Create new user in Convex"""
     password_hash = hash_password(password)
     
-    # Create user directly - Convex will throw error if email exists
+    # Create user
     result = convex_mutation("createUser", {
         "email": email,
         "passwordHash": password_hash,
@@ -103,16 +103,21 @@ def create_user_convex(email, password, name):
     })
     print(f"Create user result: {result}")
     
-    # Check for success - Convex returns the created ID on success
-    if result and result.get("value"):
+    # Check for success - Convex returns {"value": userId} on success
+    if result and "value" in result and result["value"]:
         return {"success": True}
     
-    # Check for error
-    if result:
-        error_msg = result.get("error", "Erro desconhecido")
-        return {"success": False, "error": error_msg}
+    # Check for error in result
+    if result and "error" in result:
+        return {"success": False, "error": result["error"]}
     
-    return {"success": False, "error": "Erro ao criar conta - sem resposta do servidor"}
+    # Check if there's an error message in the response
+    if result and "value" in result:
+        error_info = result.get("value", {})
+        if isinstance(error_info, dict) and "error" in error_info:
+            return {"success": False, "error": error_info["error"]}
+    
+    return {"success": False, "error": "Resposta inválida do servidor"}
 
 
 def show_login():
