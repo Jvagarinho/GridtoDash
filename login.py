@@ -1,5 +1,6 @@
 """
 Convex authentication module for GridToDash
+Uses Convex HTTP API directly
 """
 
 import streamlit as st
@@ -27,20 +28,45 @@ def hash_password(password):
     return hashlib.sha256(password.encode()).hexdigest()
 
 
-def call_convex_function(function_name, args=None):
-    """Call a Convex function via HTTP API"""
+def convex_query(query_name, args=None):
+    """Execute a Convex query via HTTP"""
     import httpx
-    import json
     
-    url = f"{CONVEX_URL}/api/{function_name}"
+    url = f"{CONVEX_URL}/api/query"
+    
+    payload = {
+        "path": query_name,
+        "args": args or {}
+    }
     
     try:
-        response = httpx.post(url, json=args or {}, timeout=10)
+        response = httpx.post(url, json=payload, timeout=15)
         if response.status_code == 200:
             return response.json()
         return None
     except Exception as e:
-        print(f"Convex error: {e}")
+        print(f"Convex query error: {e}")
+        return None
+
+
+def convex_mutation(mutation_name, args=None):
+    """Execute a Convex mutation via HTTP"""
+    import httpx
+    
+    url = f"{CONVEX_URL}/api/mutation"
+    
+    payload = {
+        "path": mutation_name,
+        "args": args or {}
+    }
+    
+    try:
+        response = httpx.post(url, json=payload, timeout=15)
+        if response.status_code == 200:
+            return response.json()
+        return None
+    except Exception as e:
+        print(f"Convex mutation error: {e}")
         return None
 
 
@@ -48,14 +74,13 @@ def verify_user_convex(email, password):
     """Verify user credentials against Convex"""
     password_hash = hash_password(password)
     
-    # Call Convex verifyUser function
-    result = call_convex_function("verifyUser", {
-        "email": email,
-        "passwordHash": password_hash
-    })
+    # Query Convex database directly for user
+    result = convex_query("getUserByEmail", {"email": email})
     
-    if result and result.get("success"):
-        return {"email": result["email"], "name": result.get("name", "")}
+    if result and result.get("value"):
+        user = result["value"]
+        if user["passwordHash"] == password_hash:
+            return {"email": user["email"], "name": user.get("name", "")}
     
     return None
 
@@ -64,14 +89,22 @@ def create_user_convex(email, password, name):
     """Create new user in Convex"""
     password_hash = hash_password(password)
     
-    # Call Convex createUser function
-    result = call_convex_function("createUser", {
+    # First check if user exists
+    existing = convex_query("getUserByEmail", {"email": email})
+    if existing and existing.get("value"):
+        return {"success": False, "error": "User already exists"}
+    
+    # Create user
+    result = convex_mutation("createUser", {
         "email": email,
         "passwordHash": password_hash,
         "name": name
     })
     
-    return result
+    if result and result.get("value"):
+        return {"success": True}
+    
+    return {"success": False, "error": "Failed to create user"}
 
 
 def show_login():

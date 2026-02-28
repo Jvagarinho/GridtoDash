@@ -1,0 +1,5 @@
+{
+  "node": "16.x",
+  "generateCommonJSApi": true,
+  "functions": "convex/"
+}
