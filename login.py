@@ -1,6 +1,6 @@
 """
 Convex authentication module for GridToDash
-Uses Convex HTTP API directly
+Uses Convex Python SDK
 """
 
 import streamlit as st
@@ -8,11 +8,8 @@ import os
 import base64
 import hashlib
 
-# Convex deployment URL
-CONVEX_URL = os.getenv("CONVEX_URL", "https://bright-trout-229.eu-west-1.convex.cloud")
-
-# Debug: print the URL being used
-print(f"Using Convex URL: {CONVEX_URL}")
+# Convex deployment URL - MUST match what's in Streamlit Cloud secrets
+CONVEX_URL = os.environ.get("CONVEX_URL", "https://bright-trout-229.eu-west-1.convex.cloud")
 
 
 def get_logo_base64():
@@ -31,48 +28,26 @@ def hash_password(password):
     return hashlib.sha256(password.encode()).hexdigest()
 
 
-def convex_query(query_name, args=None):
-    """Execute a Convex query via HTTP"""
+def convex_request(method, path, args=None):
+    """Make request to Convex API"""
     import httpx
+    import json
     
-    url = f"{CONVEX_URL}/api/query"
-    
-    payload = {
-        "path": query_name,
-        "args": args or {}
-    }
+    url = f"{CONVEX_URL}{path}"
     
     try:
-        response = httpx.post(url, json=payload, timeout=15)
+        if method == "POST":
+            response = httpx.post(url, json=args or {}, timeout=15)
+        else:
+            response = httpx.get(url, params=args or {}, timeout=15)
+        
         if response.status_code == 200:
             return response.json()
-        print(f"Convex query error: {response.status_code} - {response.text}")
-        return None
+        else:
+            print(f"Convex API error: {response.status_code} - {response.text}")
+            return {"error": f"HTTP {response.status_code}"}
     except Exception as e:
-        print(f"Convex query exception: {e}")
-        return None
-
-
-def convex_mutation(mutation_name, args=None):
-    """Execute a Convex mutation via HTTP"""
-    import httpx
-    
-    url = f"{CONVEX_URL}/api/mutation"
-    
-    payload = {
-        "path": mutation_name,
-        "args": args or {}
-    }
-    
-    try:
-        response = httpx.post(url, json=payload, timeout=15)
-        print(f"Mutation response: {response.status_code}")
-        print(f"Mutation body: {response.text}")
-        if response.status_code == 200:
-            return response.json()
-        return {"error": f"HTTP {response.status_code}: {response.text[:200]}"}
-    except Exception as e:
-        print(f"Convex mutation error: {e}")
+        print(f"Convex request error: {e}")
         return {"error": str(e)}
 
 
@@ -80,12 +55,12 @@ def verify_user_convex(email, password):
     """Verify user credentials against Convex"""
     password_hash = hash_password(password)
     
-    # Query Convex database directly for user
-    result = convex_query("getUserByEmail", {"email": email})
+    # Query user by email
+    result = convex_request("GET", f"/api/getUserByEmail?email={email}")
     
-    if result and result.get("value"):
-        user = result["value"]
-        if user["passwordHash"] == password_hash:
+    if result and "error" not in result:
+        user = result.get("value") or result
+        if user and user.get("passwordHash") == password_hash:
             return {"email": user["email"], "name": user.get("name", "")}
     
     return None
@@ -95,29 +70,25 @@ def create_user_convex(email, password, name):
     """Create new user in Convex"""
     password_hash = hash_password(password)
     
-    # Create user
-    result = convex_mutation("createUser", {
+    # Check if user exists first
+    check_result = convex_request("GET", f"/api/getUserByEmail?email={email}")
+    
+    if check_result and check_result.get("value"):
+        return {"success": False, "error": "Email já está registado"}
+    
+    # Create user using mutation
+    result = convex_request("POST", "/api/createUser", {
         "email": email,
         "passwordHash": password_hash,
-        "name": name
+        "name": name,
+        "createdAt": 0  # Will be set by server
     })
-    print(f"Create user result: {result}")
     
-    # Check for success - Convex returns {"value": userId} on success
-    if result and "value" in result and result["value"]:
+    if result and "error" not in result:
         return {"success": True}
     
-    # Check for error in result
-    if result and "error" in result:
-        return {"success": False, "error": result["error"]}
-    
-    # Check if there's an error message in the response
-    if result and "value" in result:
-        error_info = result.get("value", {})
-        if isinstance(error_info, dict) and "error" in error_info:
-            return {"success": False, "error": error_info["error"]}
-    
-    return {"success": False, "error": "Resposta inválida do servidor"}
+    error_msg = result.get("error", "Erro desconhecido") if result else "Erro de conexão"
+    return {"success": False, "error": error_msg}
 
 
 def show_login():
@@ -130,6 +101,9 @@ def show_login():
         subtitle = "Transforme os seus ficheiros Excel/CSV em relatórios PDF profissionais"
     else:
         subtitle = "Transform your Excel/CSV files into professional PDF reports"
+    
+    # Debug info
+    st.caption(f"Debug: Convex URL = {CONVEX_URL}")
     
     # Center everything with columns
     col1, col2, col3 = st.columns([1, 3, 1])
