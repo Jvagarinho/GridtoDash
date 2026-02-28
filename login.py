@@ -9,7 +9,7 @@ import base64
 import hashlib
 
 # Convex deployment URL
-CONVEX_URL = os.getenv("CONVEX_URL", "https://first-pigeon-467.eu-west-1.convex.cloud")
+CONVEX_URL = os.getenv("CONVEX_URL", "https://bright-trout-229.eu-west-1.convex.cloud")
 
 
 def get_logo_base64():
@@ -90,14 +90,7 @@ def create_user_convex(email, password, name):
     """Create new user in Convex"""
     password_hash = hash_password(password)
     
-    # First check if user exists
-    existing = convex_query("getUserByEmail", {"email": email})
-    print(f"Check existing user result: {existing}")
-    
-    if existing and existing.get("value"):
-        return {"success": False, "error": "User already exists"}
-    
-    # Create user
+    # Create user directly - Convex will throw error if email exists
     result = convex_mutation("createUser", {
         "email": email,
         "passwordHash": password_hash,
@@ -105,10 +98,15 @@ def create_user_convex(email, password, name):
     })
     print(f"Create user result: {result}")
     
-    if result and result.get("value"):
+    # Check for success
+    if result and "value" in result:
         return {"success": True}
     
-    return {"success": False, "error": "Failed to create user"}
+    # Check if it's a duplicate key error
+    if result and "value" in result and result["value"] is None:
+        return {"success": False, "error": "Email já está em uso"}
+    
+    return {"success": False, "error": "Erro ao criar conta"}
 
 
 def show_login():
