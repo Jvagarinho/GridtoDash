@@ -278,17 +278,29 @@ def show_login():
         # Subtitle - centered
         st.markdown(f'<div style="text-align: center; margin-bottom: 15px;"><p style="color: #64748B; font-size: 14px;">{t["subtitle"]}</p></div>', unsafe_allow_html=True)
         
-        # Language toggle - centered using flexbox directly
+        # Language toggle with wrapper div to ensure centering
+        st.markdown('<div class="lang-toggle-wrapper" style="display: flex; justify-content: center; margin-bottom: 20px;">', unsafe_allow_html=True)
+        
+        selected_lang = st.radio(
+            "",
+            options=["pt", "en"],
+            horizontal=True,
+            label_visibility="collapsed",
+            index=0 if lang == "pt" else 1,
+            key="lang_radio"
+        )
+        
+        st.markdown('</div>', unsafe_allow_html=True)
+        
         st.markdown("""
         <style>
-        /* Center the radio group */
-        div[data-testid="stRadio"] > div {
+        /* Toggle button styling */
+        .lang-toggle-wrapper div[data-testid="stRadio"] > div {
             display: flex !important;
-            justify-content: center !important;
+            flex-direction: row !important;
             gap: 0 !important;
         }
-        /* Style labels as toggle */
-        div[data-testid="stRadio"] label {
+        .lang-toggle-wrapper div[data-testid="stRadio"] label {
             background: #E2E8F0 !important;
             padding: 10px 24px !important;
             cursor: pointer !important;
@@ -300,28 +312,19 @@ def show_login():
             min-width: 80px !important;
             text-align: center !important;
         }
-        div[data-testid="stRadio"] label:has(input:checked) {
+        .lang-toggle-wrapper div[data-testid="stRadio"] label:has(input:checked) {
             background: #1E3A5F !important;
             color: white !important;
         }
-        div[data-testid="stRadio"] label:first-of-type {
+        .lang-toggle-wrapper div[data-testid="stRadio"] label:first-of-type {
             border-radius: 20px 0 0 20px !important;
             border-right: 1px solid #CBD5E1 !important;
         }
-        div[data-testid="stRadio"] label:last-of-type {
+        .lang-toggle-wrapper div[data-testid="stRadio"] label:last-of-type {
             border-radius: 0 20px 20px 0 !important;
         }
         </style>
         """, unsafe_allow_html=True)
-        
-        selected_lang = st.radio(
-            "",
-            options=["pt", "en"],
-            horizontal=True,
-            label_visibility="collapsed",
-            index=0 if lang == "pt" else 1,
-            key="lang_radio"
-        )
         
         if selected_lang != lang:
             st.session_state.language = selected_lang
