@@ -278,7 +278,7 @@ def show_login():
         # Subtitle - centered
         st.markdown(f'<div style="text-align: center; margin-bottom: 15px;"><p style="color: #64748B; font-size: 14px;">{t["subtitle"]}</p></div>', unsafe_allow_html=True)
         
-        # Language selector - toggle switch using radio
+        # Language selector - styled radio as toggle
         col_l1, col_l2, col_l3 = st.columns([1, 2, 1])
         with col_l2:
             st.markdown("""
@@ -288,47 +288,21 @@ def show_login():
                 justify-content: center;
                 align-items: center;
                 margin-bottom: 20px;
-                gap: 10px;
             }
-            .toggle-label {
-                font-weight: bold;
-                font-size: 14px;
-                color: #64748B;
-            }
-            .stRadio > div {
-                flex-direction: row !important;
-                gap: 10px;
-            }
-            .stRadio > div > label {
-                background: #64748B;
-                color: white;
-                padding: 8px 16px;
-                border-radius: 8px;
-                cursor: pointer;
-                font-weight: bold;
-            }
-            .stRadio > div > label:has(input:checked) {
-                background: #059669 !important;
-            }
-            .stRadio > div > label > div:first-child {
-                display: none;
+            .stRadio {
+                display: none !important;
             }
             </style>
+            <div class="toggle-container">
+                <span id="toggle-pt" style="font-weight: bold; font-size: 14px; padding: 8px 16px; border-radius: 8px 0 0 8px; cursor: pointer; background: #64748B; color: white;">PT</span>
+                <span id="toggle-en" style="font-weight: bold; font-size: 14px; padding: 8px 16px; border-radius: 0 8px 8px 0; cursor: pointer; background: #64748B; color: white;">EN</span>
+            </div>
             """, unsafe_allow_html=True)
             
-            selected_lang = st.radio("", options=["pt", "en"], horizontal=True, label_visibility="collapsed", index=0 if lang == "pt" else 1)
+            selected_lang = st.radio("", options=["pt", "en"], horizontal=True, label_visibility="collapsed", index=0 if lang == "pt" else 1, key="lang_radio")
             if selected_lang != lang:
                 st.session_state.language = selected_lang
                 st.rerun()
-            
-            # Show PT | EN labels
-            st.markdown(f'''
-            <div style="text-align: center; margin-top: -10px; margin-bottom: 20px;">
-                <span style="font-weight: bold; color: {"#059669" if lang == "pt" else "#64748B"};">PT</span>
-                <span style="color: #64748B; margin: 0 10px;">|</span>
-                <span style="font-weight: bold; color: {"#059669" if lang == "en" else "#64748B"};">EN</span>
-            </div>
-            ''', unsafe_allow_html=True)
         
         # Login form - all inside one white box
         with st.container():
