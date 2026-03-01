@@ -333,8 +333,6 @@ def show_login():
         st.markdown("</div>", unsafe_allow_html=True)
         
         if selected_lang != lang:
-        
-        if selected_lang != lang:
             st.session_state.language = selected_lang
             st.rerun()
         
