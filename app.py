@@ -319,7 +319,7 @@ st.markdown("""
     
     /* Sidebar toggle button - always visible at top */
     [data-testid="stSidebarCollapseButton"] {
-        background-color: #1E3A5F !important;
+        background-color: #3B82F6 !important;
         border: 3px solid #FFFFFF !important;
         border-radius: 8px !important;
         padding: 0 !important;
@@ -333,7 +333,7 @@ st.markdown("""
         display: flex !important;
         align-items: center !important;
         justify-content: center !important;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.3) !important;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.5) !important;
         color: white !important;
         font-size: 16px !important;
         font-weight: bold !important;
