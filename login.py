@@ -184,7 +184,7 @@ def show_login():
         # Login form - all inside one white box
         with st.container():
             st.markdown('''
-            <div style="background: white; border-radius: 16px; padding: 15px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); margin-bottom: 20px;">
+            <div style="background: white; border-radius: 16px; padding: 5px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); margin-bottom: 20px;">
                 <h3 style="text-align: center; color: #1E3A5F; margin-bottom: 15px; font-size: 22px; font-weight: 600;">Iniciar Sessão / Sign In</h3>
             </div>
             ''', unsafe_allow_html=True)
@@ -209,7 +209,7 @@ def show_login():
         with st.container():
             st.markdown('''
             <div style="background: white; border-radius: 16px; padding: 15px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); margin-top: 20px;">
-                <p style="text-align: center; color: #64748B; margin-bottom: 25px; font-size: 22px;">Não tens conta? / Don't have an account?</p>
+                <p style="text-align: center; color: #1E3A5F; margin-bottom: 25px; font-size: 22px;">Não tens conta? / Don't have an account?</p>
             </div>
             ''', unsafe_allow_html=True)
             
