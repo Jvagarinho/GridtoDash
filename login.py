@@ -278,65 +278,59 @@ def show_login():
         # Subtitle - centered
         st.markdown(f'<div style="text-align: center; margin-bottom: 15px;"><p style="color: #64748B; font-size: 14px;">{t["subtitle"]}</p></div>', unsafe_allow_html=True)
         
-        # Language toggle switch
-        col_l1, col_l2, col_l3 = st.columns([1, 2, 1])
-        with col_l2:
-            st.markdown("""
-            <style>
-            div.lang-toggle {
-                display: flex;
-                justify-content: center;
-                margin-bottom: 20px;
-            }
-            div.lang-toggle .stRadio > label {
-                background: #E2E8F0;
-                padding: 8px 20px;
-                border-radius: 20px;
-                cursor: pointer;
-                font-weight: 600;
-                font-size: 13px;
-                color: #64748B;
-                transition: all 0.3s ease;
-            }
-            div.lang-toggle .stRadio > label:has(input:checked) {
-                background: #1E3A5F;
-                color: white;
-            }
-            div.lang-toggle .stRadio > label:has(input[value="pt"]) {
-                border-radius: 20px 0 0 20px;
-                border-right: 1px solid #CBD5E1;
-            }
-            div.lang-toggle .stRadio > label:has(input[value="en"]) {
-                border-radius: 0 20px 20px 0;
-            }
-            div.lang-toggle .stRadio > label:has(input:checked) + label {
-                background: #1E3A5F;
-                color: white;
-            }
-            div.lang-toggle .row-widget.stRadio {
-                display: flex;
-                gap: 0;
-            }
-            div.lang-toggle .stRadio > div {
-                flex-direction: row !important;
-                gap: 0 !important;
-            }
-            </style>
-            <div class="lang-toggle">
-            """, unsafe_allow_html=True)
-            
-            selected_lang = st.radio(
-                "",
-                options=["pt", "en"],
-                horizontal=True,
-                label_visibility="collapsed",
-                index=0 if lang == "pt" else 1,
-                key="lang_radio"
-            )
-            
-            st.markdown("</div>", unsafe_allow_html=True)
-            
-            if selected_lang != lang:
+        # Language toggle switch - centered
+        st.markdown("""
+        <style>
+        div.lang-toggle-wrapper {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+        div.lang-toggle-wrapper .stRadio {
+            display: flex;
+            justify-content: center;
+        }
+        div.lang-toggle-wrapper .stRadio > div {
+            flex-direction: row !important;
+            gap: 0 !important;
+        }
+        div.lang-toggle-wrapper .stRadio label {
+            background: #E2E8F0;
+            padding: 8px 24px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+            color: #64748B;
+            transition: all 0.3s ease;
+            border: none;
+        }
+        div.lang-toggle-wrapper .stRadio label:has(input:checked) {
+            background: #1E3A5F;
+            color: white;
+        }
+        div.lang-toggle-wrapper .stRadio label:first-child {
+            border-radius: 20px 0 0 20px;
+            border-right: 1px solid #CBD5E1;
+        }
+        div.lang-toggle-wrapper .stRadio label:last-child {
+            border-radius: 0 20px 20px 0;
+        }
+        </style>
+        <div class="lang-toggle-wrapper">
+        """, unsafe_allow_html=True)
+        
+        selected_lang = st.radio(
+            "",
+            options=["pt", "en"],
+            horizontal=True,
+            label_visibility="collapsed",
+            index=0 if lang == "pt" else 1,
+            key="lang_radio"
+        )
+        
+        st.markdown("</div>", unsafe_allow_html=True)
+        
+        if selected_lang != lang:
                 st.session_state.language = selected_lang
                 st.rerun()
         
