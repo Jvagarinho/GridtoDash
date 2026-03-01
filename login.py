@@ -278,53 +278,55 @@ def show_login():
         # Subtitle - centered
         st.markdown(f'<div style="text-align: center; margin-bottom: 15px;"><p style="color: #64748B; font-size: 14px;">{t["subtitle"]}</p></div>', unsafe_allow_html=True)
         
-        # Check for language in query params
-        query_lang = st.query_params.get("lang")
-        if query_lang and query_lang in ["pt", "en"]:
-            st.session_state.language = query_lang
-            st.query_params.clear()
-            st.rerun()
-        
-        # Language selector - toggle switch using query params
-        new_lang = "en" if lang == "pt" else "pt"
+        # Language selector - toggle switch using radio
         col_l1, col_l2, col_l3 = st.columns([1, 2, 1])
         with col_l2:
-            st.markdown(f'''
+            st.markdown("""
             <style>
-            .toggle-container {{
+            .toggle-container {
                 display: flex;
                 justify-content: center;
                 align-items: center;
                 margin-bottom: 20px;
                 gap: 10px;
-            }}
-            .toggle-label {{
+            }
+            .toggle-label {
                 font-weight: bold;
                 font-size: 14px;
                 color: #64748B;
-            }}
-            .toggle-label.active {{
-                color: #059669;
-            }}
-            .toggle-switch {{
-                position: relative;
-                width: 56px;
-                height: 28px;
+            }
+            .stRadio > div {
+                flex-direction: row !important;
+                gap: 10px;
+            }
+            .stRadio > div > label {
                 background: #64748B;
-                border-radius: 28px;
+                color: white;
+                padding: 8px 16px;
+                border-radius: 8px;
                 cursor: pointer;
-                transition: 0.3s;
-                text-decoration: none;
-                display: inline-block;
-            }}
-            .toggle-switch:hover {{
-                background: #059669;
-            }}
+                font-weight: bold;
+            }
+            .stRadio > div > label:has(input:checked) {
+                background: #059669 !important;
+            }
+            .stRadio > div > label > div:first-child {
+                display: none;
+            }
             </style>
-            <div class="toggle-container">
-                <span class="toggle-label {"active" if lang == "pt" else ""}">PT</span>
-                <a href="?lang={new_lang}" class="toggle-switch" style="display:inline-block;padding-top:4px;text-align:center;color:white;font-size:12px;text-decoration:none;">⇄</a>
-                <span class="toggle-label {"active" if lang == "en" else ""}">EN</span>
+            """, unsafe_allow_html=True)
+            
+            selected_lang = st.radio("", options=["pt", "en"], horizontal=True, label_visibility="collapsed", index=0 if lang == "pt" else 1)
+            if selected_lang != lang:
+                st.session_state.language = selected_lang
+                st.rerun()
+            
+            # Show PT | EN labels
+            st.markdown(f'''
+            <div style="text-align: center; margin-top: -10px; margin-bottom: 20px;">
+                <span style="font-weight: bold; color: {"#059669" if lang == "pt" else "#64748B"};">PT</span>
+                <span style="color: #64748B; margin: 0 10px;">|</span>
+                <span style="font-weight: bold; color: {"#059669" if lang == "en" else "#64748B"};">EN</span>
             </div>
             ''', unsafe_allow_html=True)
         
