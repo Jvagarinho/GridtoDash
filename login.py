@@ -177,68 +177,65 @@ def show_login():
                 format_func=lambda x: "🇵🇹 PT" if x == "pt" else "🇬🇧 EN",
                 key="lang_select"
             )
-            if new_lang != lang:
+             if new_lang != lang:
                 st.session_state.language = new_lang
                 st.rerun()
         
-        # Login form container
-        st.markdown('''
-        <div style="background: white; border-radius: 16px; padding: 30px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); margin-bottom: 20px;">
-        ''', unsafe_allow_html=True)
-        
-        # Login title
-        st.markdown(f'<h3 style="text-align: center; color: #1E3A5F; margin-bottom: 20px;">{t["login_title"]}</h3>', unsafe_allow_html=True)
-        
-        # Email and Password inputs
-        email = st.text_input(t["email"], key="login_email")
-        password = st.text_input(t["password"], type="password", key="login_password")
-        
-        # Login button
-        if st.button(t["login_button"], type="primary", use_container_width=True):
-            if email and password:
-                user = verify_user(email, password)
-                if user:
-                    st.session_state.authenticated = True
-                    st.session_state.user_email = user["email"]
-                    st.session_state.user_name = user.get("name", "")
-                    st.rerun()
-                else:
-                    st.error(t["error_invalid"])
-            else:
-                st.error(t["error_empty"])
-        
-        st.markdown('</div>', unsafe_allow_html=True)
-        
-        # Sign up section
-        st.markdown('''
-        <div style="background: white; border-radius: 16px; padding: 30px; box-shadow: 0 4px 20px rgba(0,0,0,0.08);">
-        ''', unsafe_allow_html=True)
-        
-        st.markdown(f'<p style="text-align: center; color: #64748B; margin-bottom: 15px;">{t["no_account"]}</p>', unsafe_allow_html=True)
-        
-        new_email = st.text_input(t["new_email"], key="signup_email")
-        new_password = st.text_input(t["new_password"], type="password", key="signup_password")
-        confirm_password = st.text_input(t["confirm_password"], type="password", key="signup_confirm")
-        
-        if st.button(t["signup_button"], use_container_width=True):
-            if new_email and new_password and confirm_password:
-                if new_password != confirm_password:
-                    st.error(t["error_passwords_dont_match"])
-                elif len(new_password) < 6:
-                    st.error(t["error_password_short"])
-                else:
-                    result = create_user(new_email, new_password, new_email.split("@")[0])
-                    if result and result.get("success"):
+        # Login form - all inside one white box
+        with st.container():
+            st.markdown('''
+            <div style="background: white; border-radius: 16px; padding: 30px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); margin-bottom: 20px;">
+                <h3 style="text-align: center; color: #1E3A5F; margin-bottom: 25px; font-size: 22px; font-weight: 600;">Iniciar Sessão / Sign In</h3>
+            </div>
+            ''', unsafe_allow_html=True)
+            
+            email = st.text_input(t["email"], key="login_email")
+            password = st.text_input(t["password"], type="password", key="login_password")
+            
+            if st.button(t["login_button"], type="primary", use_container_width=True):
+                if email and password:
+                    user = verify_user(email, password)
+                    if user:
                         st.session_state.authenticated = True
-                        st.session_state.user_email = new_email
-                        st.session_state.user_name = new_email.split("@")[0]
-                        st.success(t["success_created"])
+                        st.session_state.user_email = user["email"]
+                        st.session_state.user_name = user.get("name", "")
                         st.rerun()
                     else:
-                        error_msg = result.get("error", "Error") if result else "Error"
-                        st.error(f"Error: {error_msg}")
-            else:
-                st.error(t["error_empty_fields"])
+                        st.error(t["error_invalid"])
+                else:
+                    st.error(t["error_empty"])
+        
+        # Sign up form - all inside one white box
+        with st.container():
+            st.markdown('''
+            <div style="background: white; border-radius: 16px; padding: 30px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); margin-top: 10px;">
+                <p style="text-align: center; color: #64748B; margin-bottom: 20px; font-size: 14px;">Não tens conta? / Don't have an account?</p>
+            </div>
+            ''', unsafe_allow_html=True)
+            
+            new_email = st.text_input(t["new_email"], key="signup_email")
+            new_password = st.text_input(t["new_password"], type="password", key="signup_password")
+            confirm_password = st.text_input(t["confirm_password"], type="password", key="signup_confirm")
+            
+            if st.button(t["signup_button"], use_container_width=True):
+                if new_email and new_password and confirm_password:
+                    if new_password != confirm_password:
+                        st.error(t["error_passwords_dont_match"])
+                    elif len(new_password) < 6:
+                        st.error(t["error_password_short"])
+                    else:
+                        result = create_user(new_email, new_password, new_email.split("@")[0])
+                        if result and result.get("success"):
+                            st.session_state.authenticated = True
+                            st.session_state.user_email = new_email
+                            st.session_state.user_name = new_email.split("@")[0]
+                            st.success(t["success_created"])
+                            st.rerun()
+                        else:
+                            error_msg = result.get("error", "Error") if result else "Error"
+                            st.error(f"Error: {error_msg}")
+                else:
+                    st.error(t["error_empty_fields"])
         
         st.markdown('</div>', unsafe_allow_html=True)
         
