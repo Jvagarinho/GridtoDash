@@ -345,7 +345,7 @@ def show_login():
         if st.session_state.show_recovery and not st.session_state.show_reset:
             with st.container():
                 st.markdown('''
-                <div style="background: white; border-radius: 16px; padding: 5px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); margin-top: 20px;">
+                <div style="background: white; border-radius: 16px; padding: 5px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); margin-top: 20px; margin-bottom: 20px;">
                     <h3 style="text-align: center; color: #1E3A5F; margin-bottom: 0px; font-size: 22px; font-weight: 500;">''' + t["recover_title"] + '''</h3>
                 </div>
                 ''', unsafe_allow_html=True)
@@ -377,19 +377,20 @@ def show_login():
         # Reset form - enter new password
         if st.session_state.show_reset:
             with st.container():
-                st.markdown('''
+                st.markdown(f'''
                 <div style="background: white; border-radius: 16px; padding: 5px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); margin-top: 20px;">
-                    <h3 style="text-align: center; color: #1E3A5F; margin-bottom: 0px; font-size: 22px; font-weight: 500;">''' + t["reset_title"] + '''</h3>
+                    <h3 style="text-align: center; color: #1E3A5F; margin-bottom: 0px; font-size: 22px; font-weight: 500;">{t["reset_title"]}</h3>
                 </div>
                 ''', unsafe_allow_html=True)
                 
                 st.markdown(f'<p style="text-align: center; color: #64748B; margin-bottom: 15px;">{t["reset_instruction"]}</p>', unsafe_allow_html=True)
                 
                 if hasattr(st.session_state, 'recovery_code'):
+                    recovery_code = st.session_state.recovery_code
                     st.markdown(f'''
                     <div style="background: #FEF3C7; border-radius: 8px; padding: 15px; margin-bottom: 15px; text-align: center;">
-                        <p style="margin: 0; color: #92400E; font-weight: bold;">''' + t["success_recovery"] + '''</p>
-                        <p style="margin: 10px 0 0 0; font-size: 24px; font-weight: bold; letter-spacing: 2px; color: #059669;">{st.session_state.recovery_code}</p>
+                        <p style="margin: 0; color: #92400E; font-weight: bold;">{t["success_recovery"]}</p>
+                        <p style="margin: 10px 0 0 0; font-size: 24px; font-weight: bold; letter-spacing: 2px; color: #059669;">{recovery_code}</p>
                     </div>
                     ''', unsafe_allow_html=True)
                 
