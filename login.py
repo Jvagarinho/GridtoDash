@@ -166,7 +166,20 @@ def show_login():
         ''', unsafe_allow_html=True)
         
         # Subtitle - centered
-        st.markdown(f'<div style="text-align: center; margin-bottom: 30px;"><p style="color: #64748B; font-size: 14px;">{t["subtitle"]}</p></div>', unsafe_allow_html=True)
+        st.markdown(f'<div style="text-align: center; margin-bottom: 15px;"><p style="color: #64748B; font-size: 14px;">{t["subtitle"]}</p></div>', unsafe_allow_html=True)
+        
+        # Language selector - right after subtitle
+        col_l1, col_l2, col_l3 = st.columns([1, 1, 1])
+        with col_l2:
+            new_lang = st.selectbox(
+                "Idioma / Language",
+                options=["pt", "en"],
+                format_func=lambda x: "🇵🇹 PT" if x == "pt" else "🇬🇧 EN",
+                key="lang_select"
+            )
+            if new_lang != lang:
+                st.session_state.language = new_lang
+                st.rerun()
         
         # Login form container
         st.markdown('''
@@ -235,19 +248,6 @@ def show_login():
             <p style="color: #94A3B8; font-size: 12px;">Powered by <b>IterioTech</b></p>
         </div>
         ''', unsafe_allow_html=True)
-        
-        # Language selector
-        col_l1, col_l2, col_l3 = st.columns([1, 1, 1])
-        with col_l2:
-            new_lang = st.selectbox(
-                "Idioma / Language",
-                options=["pt", "en"],
-                format_func=lambda x: "🇵🇹 PT" if x == "pt" else "🇬🇧 EN",
-                key="lang_select"
-            )
-            if new_lang != lang:
-                st.session_state.language = new_lang
-                st.rerun()
     
     # CSS for styling
     st.markdown("""
