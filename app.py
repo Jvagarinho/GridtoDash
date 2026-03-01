@@ -332,22 +332,14 @@ st.markdown("""
         left: 210px !important;
         z-index: 9999 !important;
         box-shadow: 0 4px 6px rgba(0,0,0,0.3) !important;
-        color: white !important;
-        font-size: 14px !important;
-        font-weight: 500 !important;
     }
     [data-testid="stSidebarCollapseButton"]:hover {
         background: #047857 !important;
     }
     [data-testid="stSidebarCollapseButton"] svg {
-        display: none !important;
-    }
-    
-    /* Add arrow text to button */
-    [data-testid="stSidebarCollapseButton"]::after {
-        content: "◀" !important;
-        color: white !important;
-        font-size: 12px !important;
+        fill: white !important;
+        width: 16px !important;
+        height: 16px !important;
     }
     
     /* Better mobile sidebar behavior */
