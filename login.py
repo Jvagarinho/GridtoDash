@@ -309,22 +309,28 @@ def show_login():
             .forgot-password-link a:hover {{
                 color: #047857;
             }}
-            button[key="forgot_password_btn"] {{
-                display: none !important;
-            }}
             </style>
             <div class="forgot-password-link">
                 <a href="#" id="forgot-link">{t["forgot_password"]}</a>
             </div>
             ''', unsafe_allow_html=True)
-            if st.button(t["forgot_password"], key="forgot_password_btn"):
+            
+            def trigger_recovery():
                 st.session_state.show_recovery = True
                 st.rerun()
+            
+            st.button(t["forgot_password"], key="forgot_password_btn", on_click=trigger_recovery)
+            
             st.markdown("""
             <script>
-            document.getElementById('forgot-link').addEventListener('click', function() {
-                document.querySelector('button[key="forgot_password_btn"]').click();
-            });
+            const btn = document.querySelector('button[key="forgot_password_btn"]');
+            if (btn) btn.style.display = 'none';
+            const link = document.getElementById('forgot-link');
+            if (link && btn) {
+                link.addEventListener('click', function() {
+                    btn.click();
+                });
+            }
             </script>
             """, unsafe_allow_html=True)
         
