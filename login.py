@@ -228,7 +228,7 @@ def show_login():
     lang = st.session_state.get("language", "pt")
     t = LOGIN_TRANSLATIONS.get(lang, LOGIN_TRANSLATIONS["pt"])
     
-    # CSS to make forgot password button look like a link
+    # CSS for forgot password and language selector
     st.markdown("""
     <style>
     button[key="forgot_password_btn"] {
@@ -244,6 +244,15 @@ def show_login():
     button[key="forgot_password_btn"]:hover {
         background: none !important;
         color: #047857 !important;
+    }
+    [data-testid="stSelectbox"] {
+        text-align: center;
+    }
+    [data-testid="stSelectbox"] > div {
+        justify-content: center;
+    }
+    div[data-testid="stHorizontalBlock"] {
+        justify-content: center;
     }
     </style>
     """, unsafe_allow_html=True)
@@ -269,14 +278,15 @@ def show_login():
         # Subtitle - centered
         st.markdown(f'<div style="text-align: center; margin-bottom: 15px;"><p style="color: #64748B; font-size: 14px;">{t["subtitle"]}</p></div>', unsafe_allow_html=True)
         
-        # Language selector - right after subtitle
+        # Language selector - centered
         col_l1, col_l2, col_l3 = st.columns([1, 1, 1])
         with col_l2:
             new_lang = st.selectbox(
-                "Idioma / Language",
+                "Idioma" if lang == "pt" else "Language",
                 options=["pt", "en"],
                 format_func=lambda x: "PT" if x == "pt" else "EN",
-                key="lang_select"
+                key="lang_select",
+                label_visibility="collapsed"
             )
             if new_lang != lang:
                 st.session_state.language = new_lang
