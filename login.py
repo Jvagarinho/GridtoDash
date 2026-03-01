@@ -329,34 +329,43 @@ def show_login():
             }}
             </style>
             <div class="toggle-container" id="toggle-container">
-                <span class="toggle-label" onclick="clickToggle()">PT</span>
-                <div class="toggle-switch {"active" if lang == "en" else ""}" id="toggle-switch" onclick="clickToggle()"></div>
-                <span class="toggle-label" onclick="clickToggle()">EN</span>
+                <span class="toggle-label {"active" if lang == "pt" else ""}" id="label-pt">PT</span>
+                <div class="toggle-switch {"active" if lang == "en" else ""}" id="toggle-switch"></div>
+                <span class="toggle-label {"active" if lang == "en" else ""}" id="label-en">EN</span>
             </div>
             ''', unsafe_allow_html=True)
             
-            # Use checkbox to track state
-            is_en = st.checkbox("", value=(lang == "en"), key="lang_checkbox", label_visibility="collapsed")
-            if is_en and lang == "pt":
-                st.session_state.language = "en"
-                st.rerun()
-            elif not is_en and lang == "en":
-                st.session_state.language = "pt"
+            # Button that gets clicked
+            if st.button("Switch Language", key="lang_switch_btn", help="Switch language"):
+                st.session_state.language = new_lang
                 st.rerun()
             
-            # Sync checkbox with toggle
+            # Make toggle click trigger the button
             st.markdown("""
-            <style>
-            input[key="lang_checkbox"] {
-                display: none !important;
-            }
-            </style>
             <script>
-            function clickToggle() {
-                const checkbox = window.parent.document.querySelector('input[key="lang_checkbox"]');
-                if (checkbox) {
-                    checkbox.click();
-                }
+            const toggle = document.getElementById('toggle-switch');
+            const labelPt = document.getElementById('label-pt');
+            const labelEn = document.getElementById('label-en');
+            const btn = window.parent.document.querySelector('button[key="lang_switch_btn"]');
+            
+            if (toggle && btn) {
+                toggle.style.display = 'none';
+            }
+            if (labelPt && btn) {
+                labelPt.style.display = 'none';
+            }
+            if (labelEn && btn) {
+                labelEn.style.display = 'none';
+            }
+            
+            // Create new clickable elements
+            if (toggle) {
+                const newToggle = toggle.cloneNode(true);
+                toggle.parentNode.replaceChild(newToggle, toggle);
+                newToggle.style.display = 'flex';
+                newToggle.addEventListener('click', function() {
+                    btn.click();
+                });
             }
             </script>
             """, unsafe_allow_html=True)
