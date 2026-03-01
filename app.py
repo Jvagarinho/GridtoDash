@@ -317,10 +317,12 @@ st.markdown("""
     /* Hide custom file uploader section - use native instead */
     /* Keep native file uploader but translate via JS */
     
-    /* Sidebar toggle button - style but keep natural position */
+    /* Sidebar toggle button - always visible */
     [data-testid="stSidebarCollapseButton"] {
         background: #059669 !important;
         border: none !important;
+        opacity: 1 !important;
+        visibility: visible !important;
     }
     [data-testid="stSidebarCollapseButton"]:hover {
         background: #047857 !important;
@@ -331,6 +333,7 @@ st.markdown("""
         fill: #FFFFFF !important;
         stroke: #FFFFFF !important;
         color: #FFFFFF !important;
+        opacity: 1 !important;
     }
     
     /* Better mobile sidebar behavior */
