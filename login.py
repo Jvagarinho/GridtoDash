@@ -278,37 +278,60 @@ def show_login():
         # Subtitle - centered
         st.markdown(f'<div style="text-align: center; margin-bottom: 15px;"><p style="color: #64748B; font-size: 14px;">{t["subtitle"]}</p></div>', unsafe_allow_html=True)
         
-        # Language selector - clickable PT | EN text
+        # Language selector - toggle switch
         col_l1, col_l2, col_l3 = st.columns([1, 2, 1])
         with col_l2:
-            new_lang_label = "EN" if lang == "pt" else "PT"
             new_lang = "en" if lang == "pt" else "pt"
             st.markdown(f'''
             <style>
-            .lang-toggle {{
-                text-align: center;
+            .toggle-container {{
+                display: flex;
+                justify-content: center;
+                align-items: center;
                 margin-bottom: 20px;
-                cursor: pointer;
+                gap: 10px;
             }}
-            .lang-toggle span {{
-                color: #059669;
+            .toggle-label {{
                 font-weight: bold;
-                font-size: 16px;
-                text-decoration: underline;
+                font-size: 14px;
+                color: #64748B;
             }}
-            .lang-toggle span:hover {{
-                color: #047857;
+            .toggle-label.active {{
+                color: #059669;
             }}
-            button[key="lang_toggle_btn"] {{
-                display: none !important;
+            .toggle-switch {{
+                position: relative;
+                width: 56px;
+                height: 28px;
+                background: #059669;
+                border-radius: 28px;
+                cursor: pointer;
+                transition: 0.3s;
+            }}
+            .toggle-switch::before {{
+                content: "";
+                position: absolute;
+                width: 22px;
+                height: 22px;
+                background: white;
+                border-radius: 50%;
+                top: 3px;
+                left: 3px;
+                transition: 0.3s;
+                box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            }}
+            .toggle-switch.en::before {{
+                transform: translateX(28px);
             }}
             </style>
-            <div class="lang-toggle">
-                <span onclick="document.querySelector('button[key=\\'lang_toggle_btn\\']').click()">PT | {new_lang_label}</span>
+            <div class="toggle-container">
+                <span class="toggle-label {"active" if lang == "pt" else ""}">PT</span>
+                <div class="toggle-switch {"en" if lang == "en" else ""}" onclick="document.querySelector('button[key=\\'lang_toggle_btn\\']').click()"></div>
+                <span class="toggle-label {"active" if lang == "en" else ""}">EN</span>
             </div>
             ''', unsafe_allow_html=True)
             
-            if st.button(f"PT | {new_lang_label}", key="lang_toggle_btn"):
+            if st.button("Toggle", key="lang_toggle_btn", help="Toggle language"):
                 st.session_state.language = new_lang
                 st.rerun()
         
