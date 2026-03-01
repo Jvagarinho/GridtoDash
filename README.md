@@ -20,16 +20,17 @@ GridToDash é uma aplicação Streamlit profissional que permite transformar fic
 
 ## Funcionalidades
 
-- 🔐 **Autenticação** - Sistema de login e registo de utilizadores
+- 🔐 **Autenticação** - Sistema de login e registo de utilizadores com MongoDB
 - 📊 **Upload de Ficheiros** - Suporta ficheiros Excel (.xlsx) e CSV
 - 🔢 **Seletor de Coluna para Métricas** - Escolha qual coluna numérica usar para calcular soma e média
 - 📈 **Seletor de Eixo X** - Escolha qual coluna mostrar como labels no gráfico
 - 📉 **Seletor de Eixo Y** - Escolha qual coluna usar para valores no gráfico
 - 📊 **Gráficos Visuais** - Gráfico de barras dinâmico com suporte a múltiplas colunas
 - 📄 **Seletor de Colunas para PDF** - Escolha quais colunas incluir no relatório
-- 📄 **Relatório PDF** - Geração automática de PDF profissional
+- PDF** - Geração automática de PDF 📄 **Relatório profissional
 - 🌐 **Bilingue** - Suporte para Português e Inglês
 - 🎨 **Design Moderno** - Interface bonita com animações e estilo boutique
+- 📱 **Responsivo** - Funcional em desktop e dispositivos móveis
 
 ## Screenshots
 
@@ -77,11 +78,11 @@ A aplicação usa MongoDB para guardar os utilizadores. Para configurar:
 
 ### Variáveis de Ambiente
 
-Se estiveres a correr localmente, cria um ficheiro `.env`:
+Se estiveres a correr localmente, cria um ficheiro `.streamlit/secrets.toml`:
 
-```env
-MONGODB_URI=
-MONGODB_DB=
+```toml
+MONGODB_URI = "mongodb+srv://username:password@cluster.mongodb.net"
+MONGODB_DB = "gridtodash"
 ```
 
 ### No Streamlit Cloud
@@ -89,9 +90,17 @@ MONGODB_DB=
 Adiciona os secrets:
 
 ```toml
-MONGODB_URI = 
-MONGODB_DB = 
+MONGODB_URI = "mongodb+srv://username:password@cluster.mongodb.net"
+MONGODB_DB = "gridtodash"
 ```
+
+### Notas de Segurança
+
+- As passwords são hashadas usando SHA-256 antes de serem armazenadas
+- A conexão com MongoDB é feita através de URI segura
+- As credenciais são armazenadas apenas em variáveis de ambiente/secrets
+- Não exponha as suas credenciais no código fonte
+- Recomenda-se usar uma password forte com pelo menos 6 caracteres
 
 ## Deploy no Streamlit Cloud
 
@@ -158,6 +167,20 @@ Exemplo:
 ## Licença
 
 MIT License
+
+## Resolução de Problemas
+
+### Erro de conexão com MongoDB
+- Verifique que a variável de ambiente `MONGODB_URI` está configurada corretamente
+- Confirme que o seu IP está whitelisted no MongoDB Atlas
+
+### A aplicação não inicia
+- Verifique se todas as dependências estão instaladas: `pip install -r requirements.txt`
+- Confirme que está a usar Python 3.10 ou superior
+
+### Erro ao gerar PDF
+- Verifique que o ficheiro Excel/CSV tem pelo menos uma coluna numérica
+- Confirme que o ficheiro não está corrompido
 
 ## Autor
 
