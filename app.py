@@ -355,6 +355,21 @@ st.markdown("""
             min-width: 200px !important;
             max-width: 200px !important;
         }
+        [data-testid="stSidebarCollapseButton"] {
+            left: 200px !important;
+            top: 15px !important;
+        }
+        /* When sidebar is collapsed, move button to main content */
+        [data-testid="stSidebar"][aria-expanded="false"] + [data-testid="stSidebarCollapseButton"],
+        section[data-testid="stSidebar"][style*="display: none"] ~ [data-testid="stSidebarCollapseButton"] {
+            left: 10px !important;
+        }
+    }
+    
+    /* Rotate arrow when sidebar is collapsed */
+    section[data-testid="stSidebar"][aria-expanded="false"] [data-testid="stSidebarCollapseButton"] svg,
+    [data-testid="stSidebar"][style*="display: none"] ~ [data-testid="stSidebarCollapseButton"] svg {
+        transform: rotate(180deg) !important;
     }
     </style>
     
