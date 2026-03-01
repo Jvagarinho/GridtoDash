@@ -278,63 +278,58 @@ def show_login():
         # Subtitle - centered
         st.markdown(f'<div style="text-align: center; margin-bottom: 15px;"><p style="color: #64748B; font-size: 14px;">{t["subtitle"]}</p></div>', unsafe_allow_html=True)
         
-        # Language toggle - simple centered text
-        col_left, col_center, col_right = st.columns([1, 1, 1])
-        with col_center:
-            st.markdown("""
-            <style>
-            /* Minimal styling: center the radio buttons */
-            div[data-testid="stRadio"] {
-                display: flex !important;
-                justify-content: center !important;
-            }
-            div[data-testid="stRadio"] > div {
-                display: flex !important;
-                flex-direction: row !important;
-                gap: 0 !important;
-            }
-            div[data-testid="stRadio"] label {
-                background: #E2E8F0 !important;
-                padding: 8px 20px !important;
-                cursor: pointer !important;
-                font-weight: 600 !important;
-                font-size: 14px !important;
-                color: #64748B !important;
-                border: none !important;
-                margin: 0 !important;
-            }
-            div[data-testid="stRadio"] label:has(input:checked) {
-                background: #1E3A5F !important;
-                color: white !important;
-            }
-            div[data-testid="stRadio"] label:first-of-type {
-                border-radius: 20px 0 0 20px !important;
-                border-right: 1px solid #CBD5E1 !important;
-            }
-            div[data-testid="stRadio"] label:last-of-type {
-                border-radius: 0 20px 20px 0 !important;
-            }
-            /* Hide radio inputs */
-            div[data-testid="stRadio"] input {
-                opacity: 0;
-                position: absolute;
-            }
-            /* Remove any default padding/margin from Streamlit */
-            .stRadio {
-                padding: 0 !important;
-                margin: 0 !important;
-            }
-            </style>
-            """, unsafe_allow_html=True)
-            
-            selected_lang = st.radio(
-                "",
-                options=["pt", "en"],
-                horizontal=True,
-                label_visibility="collapsed",
-                index=0 if lang == "pt" else 1,
-                key="lang_radio"
-            )
+        # Language toggle switch - centered using custom container
+        st.markdown("""
+        <div class="lang-toggle-wrapper" style="display: flex; justify-content: center; margin-bottom: 20px;">
+        """, unsafe_allow_html=True)
+        
+        # Minimal CSS scoped to this component only
+        st.markdown("""
+        <style>
+        /* Scoped CSS for language toggle only */
+        div.lang-toggle-wrapper div[data-testid="stRadio"] {
+            display: flex !important;
+            justify-content: center !important;
+        }
+        div.lang-toggle-wrapper div[data-testid="stRadio"] > div {
+            display: flex !important;
+            flex-direction: row !important;
+            gap: 0 !important;
+        }
+        div.lang-toggle-wrapper div[data-testid="stRadio"] label {
+            background: #E2E8F0 !important;
+            padding: 8px 24px !important;
+            cursor: pointer !important;
+            font-weight: 600 !important;
+            font-size: 14px !important;
+            color: #64748B !important;
+            border: none !important;
+            margin: 0 !important;
+        }
+        div.lang-toggle-wrapper div[data-testid="stRadio"] label:has(input:checked) {
+            background: #1E3A5F !important;
+            color: white !important;
+        }
+        div.lang-toggle-wrapper div[data-testid="stRadio"] label:first-of-type {
+            border-radius: 20px 0 0 20px !important;
+            border-right: 1px solid #CBD5E1 !important;
+        }
+        div.lang-toggle-wrapper div[data-testid="stRadio"] label:last-of-type {
+            border-radius: 0 20px 20px 0 !important;
+        }
+        </style>
+        """, unsafe_allow_html=True)
+        
+        selected_lang = st.radio(
+            "",
+            options=["pt", "en"],
+            horizontal=True,
+            label_visibility="collapsed",
+            index=0 if lang == "pt" else 1,
+            key="lang_radio"
+        )
+        
+        st.markdown("</div>", unsafe_allow_html=True)
         
         if selected_lang != lang:
             st.session_state.language = selected_lang
