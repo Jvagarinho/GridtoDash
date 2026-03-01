@@ -321,6 +321,7 @@ st.markdown("""
     [data-testid="stSidebarCollapseButton"] {
         background: #059669 !important;
         border: none !important;
+        border-radius: 8px !important;
         opacity: 1 !important;
         visibility: visible !important;
     }
