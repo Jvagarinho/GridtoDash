@@ -174,7 +174,7 @@ def show_login():
             new_lang = st.selectbox(
                 "Idioma / Language",
                 options=["pt", "en"],
-                format_func=lambda x: "🇵🇹 PT" if x == "pt" else "🇬🇧 EN",
+                format_func=lambda x: "PT" if x == "pt" else "EN",
                 key="lang_select"
             )
             if new_lang != lang:
@@ -184,8 +184,8 @@ def show_login():
         # Login form - all inside one white box
         with st.container():
             st.markdown('''
-            <div style="background: white; border-radius: 16px; padding: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); margin-bottom: 20px;">
-                <h3 style="text-align: center; color: #1E3A5F; margin-bottom: 20px; font-size: 22px; font-weight: 600;">Iniciar Sessão / Sign In</h3>
+            <div style="background: white; border-radius: 16px; padding: 15px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); margin-bottom: 20px;">
+                <h3 style="text-align: center; color: #1E3A5F; margin-bottom: 15px; font-size: 22px; font-weight: 600;">Iniciar Sessão / Sign In</h3>
             </div>
             ''', unsafe_allow_html=True)
             
@@ -208,10 +208,12 @@ def show_login():
         # Sign up form - all inside one white box
         with st.container():
             st.markdown('''
-            <div style="background: white; border-radius: 16px; padding: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); margin-top: 20px;">
-                <p style="text-align: center; color: #64748B; margin-bottom: 20px; font-size: 14px;">Não tens conta? / Don't have an account?</p>
+            <div style="background: white; border-radius: 16px; padding: 15px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); margin-top: 20px;">
+                <p style="text-align: center; color: #64748B; margin-bottom: 25px; font-size: 22px;">Não tens conta? / Don't have an account?</p>
             </div>
             ''', unsafe_allow_html=True)
+            
+            st.markdown("<div style='margin-bottom: 15px;'></div>", unsafe_allow_html=True)
             
             new_email = st.text_input(t["new_email"], key="signup_email")
             new_password = st.text_input(t["new_password"], type="password", key="signup_password")
