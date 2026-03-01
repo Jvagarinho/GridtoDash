@@ -317,17 +317,24 @@ st.markdown("""
     /* Hide custom file uploader section - use native instead */
     /* Keep native file uploader but translate via JS */
     
-    /* Sidebar toggle button - make very visible */
+    /* Sidebar toggle button - always visible */
     [data-testid="stSidebarCollapseButton"] {
         background-color: #1E3A5F !important;
-        border: 2px solid white !important;
-        border-radius: 8px !important;
-        padding: 10px !important;
+        border: 3px solid #FFFFFF !important;
+        border-radius: 50% !important;
+        padding: 0 !important;
         opacity: 1 !important;
-        width: 40px !important;
-        height: 40px !important;
-        position: relative !important;
-        top: 10px !important;
+        width: 44px !important;
+        height: 44px !important;
+        position: absolute !important;
+        right: -22px !important;
+        top: 50% !important;
+        transform: translateY(-50%) !important;
+        z-index: 9999 !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.3) !important;
     }
     [data-testid="stSidebarCollapseButton"]:hover {
         background-color: #059669 !important;
@@ -335,8 +342,22 @@ st.markdown("""
     }
     [data-testid="stSidebarCollapseButton"] svg {
         fill: white !important;
-        width: 20px !important;
-        height: 20px !important;
+        width: 24px !important;
+        height: 24px !important;
+    }
+    
+    /* Replace arrow icon with CSS arrow */
+    [data-testid="stSidebarCollapseButton"] > svg {
+        display: none !important;
+    }
+    [data-testid="stSidebarCollapseButton"]::after {
+        content: "◀" !important;
+        color: white !important;
+        font-size: 18px !important;
+        font-weight: bold !important;
+    }
+    [data-testid="stSidebarCollapseButton"][="Expand sidebar"]::after {
+       aria-label content: "▶" !important;
     }
     
     /* Better mobile sidebar behavior */
