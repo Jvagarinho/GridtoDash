@@ -337,17 +337,16 @@ st.markdown("""
     [data-testid="stSidebarCollapseButton"]:hover {
         background: #047857 !important;
     }
-    [data-testid="stSidebarCollapseButton"] svg,
-    [data-testid="stSidebarCollapseButton"] svg path,
-    [data-testid="stSidebarCollapseButton"] path {
+    [data-testid="stSidebarCollapseButton"] > button > svg,
+    [data-testid="stSidebarCollapseButton"] > svg,
+    [data-testid="stSidebarCollapseButton"] svg {
         fill: #FFFFFF !important;
         stroke: #FFFFFF !important;
         color: #FFFFFF !important;
         width: 16px !important;
         height: 16px !important;
-    }
-    [data-testid="stSidebarCollapseButton"] button {
-        color: #FFFFFF !important;
+        min-width: 16px !important;
+        min-height: 16px !important;
     }
     
     /* Better mobile sidebar behavior */
