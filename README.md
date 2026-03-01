@@ -80,8 +80,8 @@ A aplicação usa MongoDB para guardar os utilizadores. Para configurar:
 Se estiveres a correr localmente, cria um ficheiro `.env`:
 
 ```env
-MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/?appName=AppName
-MONGODB_DB=gridtodash
+MONGODB_URI=
+MONGODB_DB=
 ```
 
 ### No Streamlit Cloud
@@ -89,8 +89,8 @@ MONGODB_DB=gridtodash
 Adiciona os secrets:
 
 ```toml
-MONGODB_URI = "mongodb+srv://username:password@cluster.mongodb.net/?appName=AppName"
-MONGODB_DB = "gridtodash"
+MONGODB_URI = 
+MONGODB_DB = 
 ```
 
 ## Deploy no Streamlit Cloud
