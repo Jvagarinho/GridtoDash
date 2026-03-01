@@ -279,12 +279,12 @@ def show_login():
         st.markdown(f'<div style="text-align: center; margin-bottom: 15px;"><p style="color: #64748B; font-size: 14px;">{t["subtitle"]}</p></div>', unsafe_allow_html=True)
         
         # Language toggle switch - centered with wider columns
-        col1, col2, col3, col4, col5 = st.columns([2,1,2,1,2])
+        col1, col2, col3 = st.columns([1,1,1])
         with col2:
             selected_lang = st.radio(
                 "",
                 options=["pt", "en"],
-                horizontal=True,
+                horizontal=False,
                 label_visibility="collapsed",
                 index=0 if lang == "pt" else 1,
                 key="lang_radio"
@@ -292,30 +292,33 @@ def show_login():
         
         st.markdown("""
         <style>
+        [data-testid="stRadio"] {
+            display: flex;
+            justify-content: center;
+        }
         [data-testid="stRadio"] > div {
             flex-direction: row !important;
-            gap: 0 !important;
-            justify-content: center;
         }
         [data-testid="stRadio"] label {
             background: #E2E8F0;
-            padding: 8px 28px !important;
+            padding: 8px 24px !important;
             cursor: pointer;
             font-weight: 600;
             font-size: 14px;
-            color: #64748B;
+            color: #64748B !important;
             transition: all 0.3s ease;
-            border: none;
+            border: none !important;
+            display: inline-block;
         }
         [data-testid="stRadio"] label:has(input:checked) {
             background: #1E3A5F !important;
             color: white !important;
         }
-        [data-testid="stRadio"] label:first-of-type {
+        [data-testid="stRadio"] label:first-child {
             border-radius: 20px 0 0 20px;
-            border-right: 1px solid #CBD5E1;
+            border-right: 1px solid #CBD5E1 !important;
         }
-        [data-testid="stRadio"] label:last-of-type {
+        [data-testid="stRadio"] label:last-child {
             border-radius: 0 20px 20px 0;
         }
         </style>
