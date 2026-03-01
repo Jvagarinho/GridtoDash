@@ -313,6 +313,12 @@ def show_login():
             st.session_state.show_reset = False
         
         if not st.session_state.show_recovery and not st.session_state.show_reset:
+            # Check if recovery was triggered via URL param
+            if st.query_params.get("recover") == "1":
+                st.session_state.show_recovery = True
+                st.query_params.clear()
+                st.rerun()
+            
             st.markdown(f'''
             <style>
             .forgot-password-link {{
@@ -331,15 +337,9 @@ def show_login():
             }}
             </style>
             <div class="forgot-password-link">
-                <a href="#" id="forgot-link">{t["forgot_password"]}</a>
+                <a href="?recover=1">{t["forgot_password"]}</a>
             </div>
             ''', unsafe_allow_html=True)
-            
-            def trigger_recovery():
-                st.session_state.show_recovery = True
-                st.rerun()
-            
-            st.button(t["forgot_password"], key="forgot_password_btn", on_click=trigger_recovery)
         
         # Recovery form - generate code
         if st.session_state.show_recovery and not st.session_state.show_reset:
