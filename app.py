@@ -317,22 +317,10 @@ st.markdown("""
     /* Hide custom file uploader section - use native instead */
     /* Keep native file uploader but translate via JS */
     
-    /* Sidebar toggle button - always visible at top */
+    /* Sidebar toggle button - style but keep natural position */
     [data-testid="stSidebarCollapseButton"] {
         background: #059669 !important;
         border: none !important;
-        border-radius: 8px !important;
-        padding: 0 !important;
-        width: 28px !important;
-        height: 28px !important;
-        min-width: 28px !important;
-        opacity: 1 !important;
-        visibility: visible !important;
-        position: fixed !important;
-        top: 20px !important;
-        left: 210px !important;
-        z-index: 9999 !important;
-        box-shadow: 0 4px 6px rgba(0,0,0,0.3) !important;
     }
     [data-testid="stSidebarCollapseButton"]:hover {
         background: #047857 !important;
@@ -343,10 +331,6 @@ st.markdown("""
         fill: #FFFFFF !important;
         stroke: #FFFFFF !important;
         color: #FFFFFF !important;
-        width: 16px !important;
-        height: 16px !important;
-        min-width: 16px !important;
-        min-height: 16px !important;
     }
     
     /* Better mobile sidebar behavior */
@@ -355,21 +339,6 @@ st.markdown("""
             min-width: 200px !important;
             max-width: 200px !important;
         }
-        [data-testid="stSidebarCollapseButton"] {
-            left: 200px !important;
-            top: 15px !important;
-        }
-        /* When sidebar is collapsed, move button to main content */
-        [data-testid="stSidebar"][aria-expanded="false"] + [data-testid="stSidebarCollapseButton"],
-        section[data-testid="stSidebar"][style*="display: none"] ~ [data-testid="stSidebarCollapseButton"] {
-            left: 10px !important;
-        }
-    }
-    
-    /* Rotate arrow when sidebar is collapsed */
-    section[data-testid="stSidebar"][aria-expanded="false"] [data-testid="stSidebarCollapseButton"] svg,
-    [data-testid="stSidebar"][style*="display: none"] ~ [data-testid="stSidebarCollapseButton"] svg {
-        transform: rotate(180deg) !important;
     }
     </style>
     
