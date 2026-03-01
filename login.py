@@ -278,51 +278,61 @@ def show_login():
         # Subtitle - centered
         st.markdown(f'<div style="text-align: center; margin-bottom: 15px;"><p style="color: #64748B; font-size: 14px;">{t["subtitle"]}</p></div>', unsafe_allow_html=True)
         
-        # Language toggle switch - centered with wider columns
-        col1, col2, col3 = st.columns([1,1,1])
-        with col2:
-            selected_lang = st.radio(
-                "",
-                options=["pt", "en"],
-                horizontal=False,
-                label_visibility="collapsed",
-                index=0 if lang == "pt" else 1,
-                key="lang_radio"
-            )
-        
+        # Language toggle switch - centered
         st.markdown("""
         <style>
-        [data-testid="stRadio"] {
+        .lang-toggle-container {
+            display: flex;
+            justify-content: center;
+            margin: 0 auto 20px auto;
+            width: fit-content;
+        }
+        .lang-toggle-container .stRadio {
             display: flex;
             justify-content: center;
         }
-        [data-testid="stRadio"] > div {
+        .lang-toggle-container .stRadio > div {
             flex-direction: row !important;
+            gap: 0 !important;
         }
-        [data-testid="stRadio"] label {
+        .lang-toggle-container .stRadio label {
             background: #E2E8F0;
-            padding: 8px 24px !important;
+            padding: 8px 24px;
             cursor: pointer;
             font-weight: 600;
             font-size: 14px;
-            color: #64748B !important;
+            color: #64748B;
             transition: all 0.3s ease;
-            border: none !important;
+            border: none;
             display: inline-block;
         }
-        [data-testid="stRadio"] label:has(input:checked) {
-            background: #1E3A5F !important;
-            color: white !important;
+        .lang-toggle-container .stRadio label:has(input:checked) {
+            background: #1E3A5F;
+            color: white;
         }
-        [data-testid="stRadio"] label:first-child {
+        .lang-toggle-container .stRadio label:first-child {
             border-radius: 20px 0 0 20px;
-            border-right: 1px solid #CBD5E1 !important;
+            border-right: 1px solid #CBD5E1;
         }
-        [data-testid="stRadio"] label:last-child {
+        .lang-toggle-container .stRadio label:last-child {
             border-radius: 0 20px 20px 0;
         }
         </style>
+        <div class="lang-toggle-container">
         """, unsafe_allow_html=True)
+        
+        selected_lang = st.radio(
+            "",
+            options=["pt", "en"],
+            horizontal=True,
+            label_visibility="collapsed",
+            index=0 if lang == "pt" else 1,
+            key="lang_radio"
+        )
+        
+        st.markdown("</div>", unsafe_allow_html=True)
+        
+        if selected_lang != lang:
         
         if selected_lang != lang:
             st.session_state.language = selected_lang
