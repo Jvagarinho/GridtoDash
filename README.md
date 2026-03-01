@@ -14,180 +14,184 @@
   <a href="#">
     <img src="https://img.shields.io/badge/Streamlit-1.28%2B-red" alt="Streamlit 1.28+">
   </a>
+  <a href="#">
+    <img src="https://img.shields.io/badge/License-MIT-yellow" alt="License">
+  </a>
 </p>
 
-GridToDash é uma aplicação Streamlit profissional que permite transformar ficheiros Excel/CSV em relatórios PDF polidos e personalizados. Perfeito para pequenos empresário que precisam de relatórios rápidos sem experiência em design.
+---
 
-## Funcionalidades
+GridToDash is a professional Streamlit application that transforms Excel/CSV files into polished, branded PDF reports instantly. Perfect for small business owners who need quick, professional reports without any design experience.
 
-- 🔐 **Autenticação** - Sistema de login e registo de utilizadores com MongoDB
-- 📊 **Upload de Ficheiros** - Suporta ficheiros Excel (.xlsx) e CSV
-- 🔢 **Seletor de Coluna para Métricas** - Escolha qual coluna numérica usar para calcular soma e média
-- 📈 **Seletor de Eixo X** - Escolha qual coluna mostrar como labels no gráfico
-- 📉 **Seletor de Eixo Y** - Escolha qual coluna usar para valores no gráfico
-- 📊 **Gráficos Visuais** - Gráfico de barras dinâmico com suporte a múltiplas colunas
-- 📄 **Seletor de Colunas para PDF** - Escolha quais colunas incluir no relatório
-- PDF** - Geração automática de PDF 📄 **Relatório profissional
-- 🌐 **Bilingue** - Suporte para Português e Inglês
-- 🎨 **Design Moderno** - Interface bonita com animações e estilo boutique
-- 📱 **Responsivo** - Funcional em desktop e dispositivos móveis
+## Features
+
+- **Secure Authentication** - User login and registration system with MongoDB
+- **File Upload** - Supports Excel (.xlsx) and CSV files
+- **Smart Column Selection** - Choose which numeric column to use for metrics calculation
+- **Interactive Charts** - Dynamic bar chart with multi-column support
+- **PDF Generation** - Automatic professional PDF report creation
+- **Bilingual Support** - Full Portuguese and English translations
+- **Modern Design** - Beautiful interface with animations and boutique styling
+- **Fully Responsive** - Works seamlessly on desktop and mobile devices
 
 ## Screenshots
 
-### Interface Principal
-> A interface mostra o logo, seletor de idioma, upload de ficheiros, seletor de coluna para métricas, eixo X/Y, colunas para PDF, métricas, gráfico e tabela de dados.
+### Main Interface
+> The interface displays the logo, language selector, file uploader, column selectors for metrics and charts, PDF column selection, metrics display, chart visualization, and data table.
 
-### Relatório PDF Gerado
-> O PDF inclui métricas, gráfico de barras, e tabela com os dados selecionados do ficheiro.
+### Generated PDF Report
+> The PDF includes key metrics, bar charts, and a formatted table with your selected data.
 
-## Instalação
+## Quick Start
 
-### 1. Clonar o Repositório
+### Prerequisites
+
+- Python 3.10 or higher
+- MongoDB database (local or Atlas)
+
+### Installation
+
+1. **Clone the Repository**
 
 ```bash
 git clone https://github.com/Jvagarinho/GridToDash.git
 cd GridToDash
 ```
 
-### 2. Criar Ambiente Virtual (Opcional mas recomendado)
+2. **Create Virtual Environment (Recommended)**
 
 ```bash
 python -m venv venv
-source venv/bin/activate  # Linux/Mac
-# ou
-venv\Scripts\activate  # Windows
+# Linux/Mac
+source venv/bin/activate
+# Windows
+venv\Scripts\activate
 ```
 
-### 3. Instalar Dependências
+3. **Install Dependencies**
 
 ```bash
 pip install -r requirements.txt
 ```
 
-### 4. Executar a Aplicação
+4. **Configure Database**
+
+Create a `.streamlit/secrets.toml` file:
+
+```toml
+MONGODB_URI = "your connection details"
+MONGODB_DB = "gridtodash"
+```
+
+5. **Run the Application**
 
 ```bash
 streamlit run app.py
 ```
 
-A aplicação estará disponível em `http://localhost:8501`
+The application will be available at `http://localhost:8501`
 
-## Autenticação
+## Deployment
 
-A aplicação usa MongoDB para guardar os utilizadores. Para configurar:
+### Deploy to Streamlit Cloud
 
-### Variáveis de Ambiente
+1. Push your code to GitHub
+2. Visit [share.streamlit.io](https://share.streamlit.io)
+3. Select your repository and branch
+4. Click "Deploy"
+5. Add your secrets in the settings:
+   - `MONGODB_URI` - Your MongoDB connection string
+   - `MONGODB_DB` - Your database name
 
-Se estiveres a correr localmente, cria um ficheiro `.streamlit/secrets.toml`:
-
-```toml
-MONGODB_URI = "mongodb+srv://username:password@cluster.mongodb.net"
-MONGODB_DB = "gridtodash"
-```
-
-### No Streamlit Cloud
-
-Adiciona os secrets:
-
-```toml
-MONGODB_URI = "mongodb+srv://username:password@cluster.mongodb.net"
-MONGODB_DB = "gridtodash"
-```
-
-### Notas de Segurança
-
-- As passwords são hashadas usando SHA-256 antes de serem armazenadas
-- A conexão com MongoDB é feita através de URI segura
-- As credenciais são armazenadas apenas em variáveis de ambiente/secrets
-- Não exponha as suas credenciais no código fonte
-- Recomenda-se usar uma password forte com pelo menos 6 caracteres
-
-## Deploy no Streamlit Cloud
-
-1. Faça push do código para o GitHub
-2. Aceda a [share.streamlit.io](https://share.streamlit.io)
-3. Selecione o repositório e branch
-4. Clique em "Deploy"
-5. Adicione os secrets (MONGODB_URI e MONGODB_DB) nas configurações
-
-## Estrutura do Projeto
+## Project Structure
 
 ```
 GridToDash/
-├── app.py              # Aplicação principal
-├── login.py            # Módulo de autenticação
-├── requirements.txt    # Dependências Python
-├── logo.png           # Logo da aplicação
-├── convex/            # Funções Convex (opcional)
-├── .streamlit/        # Configurações Streamlit
-├── .gitignore         # Ficheiros a ignorar
-└── README.md         # Documentação
+├── app.py              # Main application
+├── login.py            # Authentication module
+├── requirements.txt    # Python dependencies
+├── logo.png           # Application logo
+├── convex/            # Convex functions (optional)
+├── .streamlit/        # Streamlit configuration
+├── .gitignore         # Git ignore patterns
+└── README.md          # Documentation
 ```
 
-## Tecnologias Utilizadas
+## Technology Stack
 
-- **Frontend**: Streamlit
-- **Base de Dados**: MongoDB (autenticação)
-- **Processamento de Dados**: Pandas, OpenPyXL
-- **Gráficos**: Matplotlib
-- **PDF**: FPDF
-- **Estilização**: CSS Customizado
+| Category | Technology |
+|----------|------------|
+| Frontend | Streamlit |
+| Database | MongoDB |
+| Data Processing | Pandas, OpenPyXL |
+| Charts | Matplotlib |
+| PDF Generation | FPDF |
+| Styling | Custom CSS |
 
-## Como Usar
+## How to Use
 
-1. **Crie uma conta** - Use o formulário de registo
-2. **Inicie sessão** - Faça login com email e password
-3. **Selecione o Idioma** - Use os botões PT/EN na sidebar
-4. **Carregue um Ficheiro** - Arraste ou selecione um ficheiro Excel ou CSV
-5. **Escolha a Coluna para Métricas** - Selecione qual coluna numérica usar para Total Sum e Average Value
-6. **Escolha o Eixo X** - Selecione qual coluna aparecer como labels no gráfico
-7. **Escolha o Eixo Y** - Selecione qual coluna usar para os valores no gráfico
-8. **Selecione Colunas para PDF** - Escolha quais colunas incluir no relatório
-9. **Visualize os Dados** - See métricas, gráfico e tabela de dados
-10. **Gere o PDF** - Clique em "Gerar Relatório PDF"
-11. **Download** - Faça download do relatório gerado
+1. **Create an Account** - Use the registration form
+2. **Sign In** - Enter your credentials
+3. **Select Language** - Use PT/EN buttons in the sidebar
+4. **Upload File** - Drag or select an Excel or CSV file
+5. **Choose Metrics Column** - Select which numeric column for Total Sum and Average
+6. **Choose X Axis** - Select which column for chart labels
+7. **Choose Y Axis** - Select which column for chart values
+8. **Select PDF Columns** - Choose columns to include in the report
+9. **View Data** - See metrics, chart, and data table
+10. **Generate PDF** - Click "Generate PDF Report"
+11. **Download** - Get your professional report
 
-## Formato do Ficheiro de Entrada
+## Input File Format
 
-O ficheiro Excel/CSV deve conter:
-- Pelo menos uma coluna numérica para cálculo de métricas
-- Colunas de texto são exibidas na tabela e gráfico
+Your Excel/CSV file should contain:
+- At least one numeric column for metrics calculation
+- Text columns for table and chart display
 
-Exemplo:
-| Produto | Vendas | Stock | Vendedor |
-|---------|--------|-------|----------|
-| Produto A | 1000 | 50 | João |
-| Produto B | 2500 | 30 | Maria |
+Example:
 
-## Idiomas Suportados
+| Product | Sales | Stock | Seller |
+|---------|-------|-------|--------|
+| Product A | 1000 | 50 | John |
+| Product B | 2500 | 30 | Mary |
 
-- 🇵🇹 Português
-- 🇬🇧 Inglês
+## Security Notes
 
-## Licença
+- Passwords are hashed using SHA-256 before storage
+- MongoDB connection uses secure URI
+- Credentials are stored only in environment variables/secrets
+- Never expose your credentials in source code
+- Minimum 6 characters required for passwords
 
-MIT License
+## Troubleshooting
 
-## Resolução de Problemas
+### MongoDB Connection Error
+- Verify `MONGODB_URI` environment variable is correctly configured
+- Confirm your IP is whitelisted in MongoDB Atlas
 
-### Erro de conexão com MongoDB
-- Verifique que a variável de ambiente `MONGODB_URI` está configurada corretamente
-- Confirme que o seu IP está whitelisted no MongoDB Atlas
+### Application Won't Start
+- Ensure all dependencies are installed: `pip install -r requirements.txt`
+- Verify you're using Python 3.10 or higher
 
-### A aplicação não inicia
-- Verifique se todas as dependências estão instaladas: `pip install -r requirements.txt`
-- Confirme que está a usar Python 3.10 ou superior
+### PDF Generation Error
+- Ensure your Excel/CSV file has at least one numeric column
+- Verify the file is not corrupted
 
-### Erro ao gerar PDF
-- Verifique que o ficheiro Excel/CSV tem pelo menos uma coluna numérica
-- Confirme que o ficheiro não está corrompido
+## Supported Languages
 
-## Autor
+- 🇵🇹 Portuguese
+- 🇬🇧 English
 
-Desenvolvido por IterioTech
+## License
+
+MIT License - See [LICENSE](LICENSE) for details
+
+## Author
+
+Developed by **IterioTech**
 
 ---
 
 <p align="center">
-  Feito com ❤️ por IterioTech
+  Made with ❤️ by IterioTech
 </p>
