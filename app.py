@@ -322,11 +322,10 @@ st.markdown("""
         background: #059669 !important;
         border: none !important;
         border-radius: 8px !important;
-        padding: 8px 12px !important;
+        padding: 8px 16px !important;
+        font-size: 0.9rem !important;
         opacity: 1 !important;
         visibility: visible !important;
-        min-width: 50px !important;
-        height: auto !important;
         position: fixed !important;
         top: 15px !important;
         left: 210px !important;
