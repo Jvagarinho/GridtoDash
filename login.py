@@ -278,57 +278,50 @@ def show_login():
         # Subtitle - centered
         st.markdown(f'<div style="text-align: center; margin-bottom: 15px;"><p style="color: #64748B; font-size: 14px;">{t["subtitle"]}</p></div>', unsafe_allow_html=True)
         
-        # Language toggle - use single column with full width and center via CSS
-        col = st.columns([1])[0]
-        with col:
-            st.markdown("""
-            <style>
-            /* Force center everything in this column */
-            div[data-testid="stRadio"] {
-                display: flex !important;
-                justify-content: center !important;
-                width: 100% !important;
-            }
-            div[data-testid="stRadio"] > div {
-                display: flex !important;
-                flex-direction: row !important;
-                gap: 0 !important;
-                justify-content: center !important;
-            }
-            div[data-testid="stRadio"] label {
-                background: #E2E8F0 !important;
-                padding: 10px 24px !important;
-                cursor: pointer !important;
-                font-weight: 600 !important;
-                font-size: 14px !important;
-                color: #64748B !important;
-                border: none !important;
-                margin: 0 !important;
-                min-width: 80px !important;
-                text-align: center !important;
-            }
-            div[data-testid="stRadio"] label:has(input:checked) {
-                background: #1E3A5F !important;
-                color: white !important;
-            }
-            div[data-testid="stRadio"] label:first-of-type {
-                border-radius: 20px 0 0 20px !important;
-                border-right: 1px solid #CBD5E1 !important;
-            }
-            div[data-testid="stRadio"] label:last-of-type {
-                border-radius: 0 20px 20px 0 !important;
-            }
-            </style>
-            """, unsafe_allow_html=True)
-            
-            selected_lang = st.radio(
-                "",
-                options=["pt", "en"],
-                horizontal=True,
-                label_visibility="collapsed",
-                index=0 if lang == "pt" else 1,
-                key="lang_radio"
-            )
+        # Language toggle - centered using flexbox directly
+        st.markdown("""
+        <style>
+        /* Center the radio group */
+        div[data-testid="stRadio"] > div {
+            display: flex !important;
+            justify-content: center !important;
+            gap: 0 !important;
+        }
+        /* Style labels as toggle */
+        div[data-testid="stRadio"] label {
+            background: #E2E8F0 !important;
+            padding: 10px 24px !important;
+            cursor: pointer !important;
+            font-weight: 600 !important;
+            font-size: 14px !important;
+            color: #64748B !important;
+            border: none !important;
+            margin: 0 !important;
+            min-width: 80px !important;
+            text-align: center !important;
+        }
+        div[data-testid="stRadio"] label:has(input:checked) {
+            background: #1E3A5F !important;
+            color: white !important;
+        }
+        div[data-testid="stRadio"] label:first-of-type {
+            border-radius: 20px 0 0 20px !important;
+            border-right: 1px solid #CBD5E1 !important;
+        }
+        div[data-testid="stRadio"] label:last-of-type {
+            border-radius: 0 20px 20px 0 !important;
+        }
+        </style>
+        """, unsafe_allow_html=True)
+        
+        selected_lang = st.radio(
+            "",
+            options=["pt", "en"],
+            horizontal=True,
+            label_visibility="collapsed",
+            index=0 if lang == "pt" else 1,
+            key="lang_radio"
+        )
         
         if selected_lang != lang:
             st.session_state.language = selected_lang
