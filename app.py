@@ -317,28 +317,26 @@ st.markdown("""
     /* Hide custom file uploader section - use native instead */
     /* Keep native file uploader but translate via JS */
     
-    /* Sidebar toggle button - make more visible */
+    /* Sidebar toggle button - make very visible */
     [data-testid="stSidebarCollapseButton"] {
         background-color: #1E3A5F !important;
-        border-radius: 8px;
-        padding: 8px !important;
+        border: 2px solid white !important;
+        border-radius: 8px !important;
+        padding: 10px !important;
         opacity: 1 !important;
+        width: 40px !important;
+        height: 40px !important;
+        position: relative !important;
+        top: 10px !important;
     }
     [data-testid="stSidebarCollapseButton"]:hover {
         background-color: #059669 !important;
+        border-color: #059669 !important;
     }
     [data-testid="stSidebarCollapseButton"] svg {
         fill: white !important;
-        width: 24px !important;
-        height: 24px !important;
-    }
-    
-    /* Make sidebar toggle visible with arrow indicator */
-    .stSidebar > div > button[aria-label="Collapse sidebar"]::before,
-    .stSidebar > div > button[aria-label="Expand sidebar"]::before {
-        content: "◀" !important;
-        font-size: 16px;
-        color: white !important;
+        width: 20px !important;
+        height: 20px !important;
     }
     
     /* Better mobile sidebar behavior */
