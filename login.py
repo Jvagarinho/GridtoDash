@@ -228,16 +228,22 @@ def show_login():
     lang = st.session_state.get("language", "pt")
     t = LOGIN_TRANSLATIONS.get(lang, LOGIN_TRANSLATIONS["pt"])
     
-    # CSS to hide forgot password button
+    # CSS to make forgot password button look like a link
     st.markdown("""
     <style>
-    button[kind="secondary"][key="forgot_password_btn"] {
-        display: none !important;
-        visibility: hidden !important;
-        height: 0 !important;
-        padding: 0 !important;
-        margin: 0 !important;
+    button[key="forgot_password_btn"] {
+        background: none !important;
         border: none !important;
+        padding: 0 !important;
+        color: #059669 !important;
+        text-decoration: underline !important;
+        font-size: 14px !important;
+        font-weight: normal !important;
+        box-shadow: none !important;
+    }
+    button[key="forgot_password_btn"]:hover {
+        background: none !important;
+        color: #047857 !important;
     }
     </style>
     """, unsafe_allow_html=True)
