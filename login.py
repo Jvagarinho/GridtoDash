@@ -278,54 +278,54 @@ def show_login():
         # Subtitle - centered
         st.markdown(f'<div style="text-align: center; margin-bottom: 15px;"><p style="color: #64748B; font-size: 14px;">{t["subtitle"]}</p></div>', unsafe_allow_html=True)
         
-        # Language toggle switch - centered using columns
-        col1, col2, col3 = st.columns([1,1,1])
-        with col2:
-            st.markdown("""
-            <style>
-            div.lang-toggle-center .stRadio {
-                display: flex;
-                justify-content: center;
-            }
-            div.lang-toggle-center .stRadio > div {
-                flex-direction: row !important;
-                gap: 0 !important;
-            }
-            div.lang-toggle-center .stRadio label {
-                background: #E2E8F0;
-                padding: 8px 28px;
-                cursor: pointer;
-                font-weight: 600;
-                font-size: 14px;
-                color: #64748B;
-                transition: all 0.3s ease;
-                border: none;
-            }
-            div.lang-toggle-center .stRadio label:has(input:checked) {
-                background: #1E3A5F;
-                color: white;
-            }
-            div.lang-toggle-center .stRadio label:first-child {
-                border-radius: 20px 0 0 20px;
-                border-right: 1px solid #CBD5E1;
-            }
-            div.lang-toggle-center .stRadio label:last-child {
-                border-radius: 0 20px 20px 0;
-            }
-            </style>
-            <div class="lang-toggle-center">
-            """, unsafe_allow_html=True)
-            
-            selected_lang = st.radio(
-                "",
-                options=["pt", "en"],
-                horizontal=True,
-                label_visibility="collapsed",
-                index=0 if lang == "pt" else 1,
-                key="lang_radio"
-            )
-            
-            st.markdown("</div>", unsafe_allow_html=True)
+        # Language toggle switch - fully centered
+        st.markdown("""
+        <style>
+        .lang-toggle-container {
+            display: flex;
+            justify-content: center;
+            margin: 0 auto 20px auto;
+            width: fit-content;
+        }
+        .lang-toggle-container .stRadio > div {
+            flex-direction: row !important;
+            gap: 0 !important;
+        }
+        .lang-toggle-container .stRadio label {
+            background: #E2E8F0;
+            padding: 8px 28px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+            color: #64748B;
+            transition: all 0.3s ease;
+            border: none;
+        }
+        .lang-toggle-container .stRadio label:has(input:checked) {
+            background: #1E3A5F;
+            color: white;
+        }
+        .lang-toggle-container .stRadio label:first-child {
+            border-radius: 20px 0 0 20px;
+            border-right: 1px solid #CBD5E1;
+        }
+        .lang-toggle-container .stRadio label:last-child {
+            border-radius: 0 20px 20px 0;
+        }
+        </style>
+        <div class="lang-toggle-container">
+        """, unsafe_allow_html=True)
+        
+        selected_lang = st.radio(
+            "",
+            options=["pt", "en"],
+            horizontal=True,
+            label_visibility="collapsed",
+            index=0 if lang == "pt" else 1,
+            key="lang_radio"
+        )
+        
+        st.markdown("</div>", unsafe_allow_html=True)
         
         if selected_lang != lang:
             st.session_state.language = selected_lang
