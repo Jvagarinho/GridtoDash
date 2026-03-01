@@ -278,18 +278,36 @@ def show_login():
         # Subtitle - centered
         st.markdown(f'<div style="text-align: center; margin-bottom: 15px;"><p style="color: #64748B; font-size: 14px;">{t["subtitle"]}</p></div>', unsafe_allow_html=True)
         
-        # Language selector - buttons PT/EN
+        # Language selector - clickable PT | EN text
         col_l1, col_l2, col_l3 = st.columns([1, 2, 1])
         with col_l2:
-            col_pt, col_en = st.columns(2)
-            with col_pt:
-                if st.button("PT", use_container_width=True, type="primary" if lang == "pt" else "secondary"):
-                    st.session_state.language = "pt"
-                    st.rerun()
-            with col_en:
-                if st.button("EN", use_container_width=True, type="primary" if lang == "en" else "secondary"):
-                    st.session_state.language = "en"
-                    st.rerun()
+            new_lang_label = "EN" if lang == "pt" else "PT"
+            new_lang = "en" if lang == "pt" else "pt"
+            st.markdown(f'''
+            <style>
+            .lang-toggle {{
+                text-align: center;
+                margin-bottom: 20px;
+                cursor: pointer;
+            }}
+            .lang-toggle span {{
+                color: #059669;
+                font-weight: bold;
+                font-size: 16px;
+                text-decoration: underline;
+            }}
+            .lang-toggle span:hover {{
+                color: #047857;
+            }}
+            </style>
+            <div class="lang-toggle">
+                <span id="lang-link">PT | {new_lang_label}</span>
+            </div>
+            ''', unsafe_allow_html=True)
+            
+            if st.button(f"PT | {new_lang_label}", key="lang_toggle_btn"):
+                st.session_state.language = new_lang
+                st.rerun()
         
         # Login form - all inside one white box
         with st.container():
