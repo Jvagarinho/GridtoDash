@@ -278,60 +278,66 @@ def show_login():
         # Subtitle - centered
         st.markdown(f'<div style="text-align: center; margin-bottom: 15px;"><p style="color: #64748B; font-size: 14px;">{t["subtitle"]}</p></div>', unsafe_allow_html=True)
         
-        # Language toggle switch - centered
-        st.markdown("""
-        <style>
-        .lang-toggle-container {
-            display: flex;
-            justify-content: center;
-            margin: 0 auto 20px auto;
-            width: fit-content;
-            padding: 0 20px;
-        }
-        .lang-toggle-container .stRadio {
-            display: flex;
-            justify-content: center;
-        }
-        .lang-toggle-container .stRadio > div {
-            flex-direction: row !important;
-            gap: 0 !important;
-        }
-        .lang-toggle-container .stRadio label {
-            background: #E2E8F0;
-            padding: 8px 24px;
-            cursor: pointer;
-            font-weight: 600;
-            font-size: 14px;
-            color: #64748B;
-            transition: all 0.3s ease;
-            border: none;
-            display: inline-block;
-        }
-        .lang-toggle-container .stRadio label:has(input:checked) {
-            background: #1E3A5F;
-            color: white;
-        }
-        .lang-toggle-container .stRadio label:first-child {
-            border-radius: 20px 0 0 20px;
-            border-right: 1px solid #CBD5E1;
-        }
-        .lang-toggle-container .stRadio label:last-child {
-            border-radius: 0 20px 20px 0;
-        }
-        </style>
-        <div class="lang-toggle-container">
-        """, unsafe_allow_html=True)
-        
-        selected_lang = st.radio(
-            "",
-            options=["pt", "en"],
-            horizontal=True,
-            label_visibility="collapsed",
-            index=0 if lang == "pt" else 1,
-            key="lang_radio"
-        )
-        
-        st.markdown("</div>", unsafe_allow_html=True)
+        # Language toggle switch - centered using Streamlit columns
+        col1, col2, col3 = st.columns([1, 1, 1])
+        with col2:
+            st.markdown("""
+            <style>
+            /* Hide the radio container background/borders */
+            div[data-testid="stRadio"] {
+                background: transparent !important;
+                border: none !important;
+                padding: 0 !important;
+            }
+            /* Align radio buttons horizontally and remove gaps */
+            div[data-testid="stRadio"] > div {
+                display: flex !important;
+                flex-direction: row !important;
+                gap: 0 !important;
+                justify-content: center !important;
+            }
+            /* Style the radio labels as toggle buttons */
+            div[data-testid="stRadio"] label {
+                background: #E2E8F0 !important;
+                padding: 8px 24px !important;
+                cursor: pointer !important;
+                font-weight: 600 !important;
+                font-size: 14px !important;
+                color: #64748B !important;
+                transition: all 0.3s ease !important;
+                border: none !important;
+                margin: 0 !important;
+            }
+            /* Selected state */
+            div[data-testid="stRadio"] label:has(input:checked) {
+                background: #1E3A5F !important;
+                color: white !important;
+            }
+            /* PT button: left rounded */
+            div[data-testid="stRadio"] label:first-of-type {
+                border-radius: 20px 0 0 20px !important;
+                border-right: 1px solid #CBD5E1 !important;
+            }
+            /* EN button: right rounded */
+            div[data-testid="stRadio"] label:last-of-type {
+                border-radius: 0 20px 20px 0 !important;
+            }
+            /* Hide radio inputs */
+            div[data-testid="stRadio"] input {
+                opacity: 0;
+                position: absolute;
+            }
+            </style>
+            """, unsafe_allow_html=True)
+            
+            selected_lang = st.radio(
+                "",
+                options=["pt", "en"],
+                horizontal=True,
+                label_visibility="collapsed",
+                index=0 if lang == "pt" else 1,
+                key="lang_radio"
+            )
         
         if selected_lang != lang:
             st.session_state.language = selected_lang
