@@ -177,7 +177,7 @@ def show_login():
                 format_func=lambda x: "🇵🇹 PT" if x == "pt" else "🇬🇧 EN",
                 key="lang_select"
             )
-             if new_lang != lang:
+            if new_lang != lang:
                 st.session_state.language = new_lang
                 st.rerun()
         
