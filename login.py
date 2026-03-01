@@ -345,16 +345,19 @@ def show_login():
                 st.rerun()
             
             # Sync checkbox with toggle
-            st.markdown(f"""
+            st.markdown("""
+            <style>
+            input[key="lang_checkbox"] {
+                display: none !important;
+            }
+            </style>
             <script>
-            const checkbox = window.parent.document.querySelector('input[key="lang_checkbox"]');
-            const toggle = document.getElementById('toggle-switch');
-            if (checkbox && toggle) {{
-                checkbox.style.display = 'none';
-                function clickToggle() {{
+            function clickToggle() {
+                const checkbox = window.parent.document.querySelector('input[key="lang_checkbox"]');
+                if (checkbox) {
                     checkbox.click();
-                }}
-            }}
+                }
+            }
             </script>
             """, unsafe_allow_html=True)
         
