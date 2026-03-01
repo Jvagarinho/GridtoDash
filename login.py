@@ -330,7 +330,7 @@ def show_login():
             </style>
             <div class="toggle-container" id="toggle-container">
                 <span class="toggle-label {"active" if lang == "pt" else ""}" id="label-pt">PT</span>
-                <div class="toggle-switch {"active" if lang == "en" else ""}" id="toggle-switch"></div>
+                <div class="toggle-switch {"active" if lang == "en" else ""}" id="toggle-switch" style="display: flex; cursor: pointer;"></div>
                 <span class="toggle-label {"active" if lang == "en" else ""}" id="label-en">EN</span>
             </div>
             ''', unsafe_allow_html=True)
@@ -340,33 +340,34 @@ def show_login():
                 st.session_state.language = new_lang
                 st.rerun()
             
-            # Make toggle click trigger the button
+            # Hide button and make toggle click trigger it
             st.markdown("""
+            <style>
+            button[key="lang_switch_btn"] {
+                display: none !important;
+            }
+            </style>
             <script>
-            const toggle = document.getElementById('toggle-switch');
-            const labelPt = document.getElementById('label-pt');
-            const labelEn = document.getElementById('label-en');
-            const btn = window.parent.document.querySelector('button[key="lang_switch_btn"]');
-            
-            if (toggle && btn) {
-                toggle.style.display = 'none';
-            }
-            if (labelPt && btn) {
-                labelPt.style.display = 'none';
-            }
-            if (labelEn && btn) {
-                labelEn.style.display = 'none';
-            }
-            
-            // Create new clickable elements
-            if (toggle) {
-                const newToggle = toggle.cloneNode(true);
-                toggle.parentNode.replaceChild(newToggle, toggle);
-                newToggle.style.display = 'flex';
-                newToggle.addEventListener('click', function() {
-                    btn.click();
-                });
-            }
+            setTimeout(function() {
+                const toggle = document.getElementById('toggle-switch');
+                const labelPt = document.getElementById('label-pt');
+                const labelEn = document.getElementById('label-en');
+                const btn = window.parent.document.querySelector('button[key="lang_switch_btn"]');
+                
+                if (toggle && btn) {
+                    toggle.style.display = 'flex';
+                    toggle.style.cursor = 'pointer';
+                    toggle.onclick = function() { btn.click(); };
+                }
+                if (labelPt && btn) {
+                    labelPt.style.cursor = 'pointer';
+                    labelPt.onclick = function() { btn.click(); };
+                }
+                if (labelEn && btn) {
+                    labelEn.style.cursor = 'pointer';
+                    labelEn.onclick = function() { btn.click(); };
+                }
+            }, 100);
             </script>
             """, unsafe_allow_html=True)
         
