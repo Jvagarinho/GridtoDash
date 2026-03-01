@@ -322,12 +322,14 @@ st.markdown("""
         background: #059669 !important;
         border: none !important;
         border-radius: 8px !important;
-        padding: 8px 16px !important;
-        font-size: 0.9rem !important;
+        padding: 0 !important;
+        width: 28px !important;
+        height: 28px !important;
+        min-width: 28px !important;
         opacity: 1 !important;
         visibility: visible !important;
         position: fixed !important;
-        top: 15px !important;
+        top: 20px !important;
         left: 210px !important;
         z-index: 9999 !important;
         box-shadow: 0 4px 6px rgba(0,0,0,0.3) !important;
