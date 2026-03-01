@@ -278,98 +278,18 @@ def show_login():
         # Subtitle - centered
         st.markdown(f'<div style="text-align: center; margin-bottom: 15px;"><p style="color: #64748B; font-size: 14px;">{t["subtitle"]}</p></div>', unsafe_allow_html=True)
         
-        # Language selector - toggle switch
+        # Language selector - two buttons (PT | EN)
         col_l1, col_l2, col_l3 = st.columns([1, 2, 1])
         with col_l2:
-            new_lang = "en" if lang == "pt" else "pt"
-            st.markdown(f'''
-            <style>
-            .toggle-container {{
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                margin-bottom: 20px;
-                gap: 10px;
-            }}
-            .toggle-label {{
-                font-weight: bold;
-                font-size: 14px;
-                color: #64748B;
-                cursor: pointer;
-            }}
-            .toggle-label.active {{
-                color: #059669;
-            }}
-            .toggle-switch {{
-                position: relative;
-                width: 56px;
-                height: 28px;
-                background: #64748B;
-                border-radius: 28px;
-                cursor: pointer;
-                transition: 0.3s;
-            }}
-            .toggle-switch.active {{
-                background: #059669;
-            }}
-            .toggle-switch::before {{
-                content: "";
-                position: absolute;
-                width: 22px;
-                height: 22px;
-                background: white;
-                border-radius: 50%;
-                top: 3px;
-                left: 3px;
-                transition: 0.3s;
-                box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-            }}
-            .toggle-switch.active::before {{
-                transform: translateX(28px);
-            }}
-            </style>
-            <div class="toggle-container" id="toggle-container">
-                <span class="toggle-label {"active" if lang == "pt" else ""}" id="label-pt">PT</span>
-                <div class="toggle-switch {"active" if lang == "en" else ""}" id="toggle-switch" style="display: flex; cursor: pointer;"></div>
-                <span class="toggle-label {"active" if lang == "en" else ""}" id="label-en">EN</span>
-            </div>
-            ''', unsafe_allow_html=True)
-            
-            # Button that gets clicked
-            if st.button("Switch Language", key="lang_switch_btn", help="Switch language"):
-                st.session_state.language = new_lang
-                st.rerun()
-            
-            # Hide button and make toggle click trigger it
-            st.markdown("""
-            <style>
-            button[key="lang_switch_btn"] {
-                display: none !important;
-            }
-            </style>
-            <script>
-            setTimeout(function() {
-                const toggle = document.getElementById('toggle-switch');
-                const labelPt = document.getElementById('label-pt');
-                const labelEn = document.getElementById('label-en');
-                const btn = window.parent.document.querySelector('button[key="lang_switch_btn"]');
-                
-                if (toggle && btn) {
-                    toggle.style.display = 'flex';
-                    toggle.style.cursor = 'pointer';
-                    toggle.onclick = function() { btn.click(); };
-                }
-                if (labelPt && btn) {
-                    labelPt.style.cursor = 'pointer';
-                    labelPt.onclick = function() { btn.click(); };
-                }
-                if (labelEn && btn) {
-                    labelEn.style.cursor = 'pointer';
-                    labelEn.onclick = function() { btn.click(); };
-                }
-            }, 100);
-            </script>
-            """, unsafe_allow_html=True)
+            col_pt, col_en = st.columns(2)
+            with col_pt:
+                if st.button("PT", use_container_width=True, type="primary" if lang == "pt" else "secondary", key="btn_pt"):
+                    st.session_state.language = "pt"
+                    st.rerun()
+            with col_en:
+                if st.button("EN", use_container_width=True, type="primary" if lang == "en" else "secondary", key="btn_en"):
+                    st.session_state.language = "en"
+                    st.rerun()
         
         # Login form - all inside one white box
         with st.container():
