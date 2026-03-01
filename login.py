@@ -299,9 +299,12 @@ def show_login():
             .lang-toggle span:hover {{
                 color: #047857;
             }}
+            button[key="lang_toggle_btn"] {{
+                display: none !important;
+            }}
             </style>
             <div class="lang-toggle">
-                <span id="lang-link">PT | {new_lang_label}</span>
+                <span onclick="document.querySelector('button[key=\\'lang_toggle_btn\\']').click()">PT | {new_lang_label}</span>
             </div>
             ''', unsafe_allow_html=True)
             
