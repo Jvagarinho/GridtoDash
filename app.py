@@ -317,47 +317,39 @@ st.markdown("""
     /* Hide custom file uploader section - use native instead */
     /* Keep native file uploader but translate via JS */
     
-    /* Sidebar toggle button - always visible */
+    /* Sidebar toggle button - always visible at top */
     [data-testid="stSidebarCollapseButton"] {
         background-color: #1E3A5F !important;
         border: 3px solid #FFFFFF !important;
-        border-radius: 50% !important;
+        border-radius: 8px !important;
         padding: 0 !important;
         opacity: 1 !important;
-        width: 44px !important;
-        height: 44px !important;
-        position: absolute !important;
-        right: -22px !important;
-        top: 50% !important;
-        transform: translateY(-50%) !important;
+        width: 50px !important;
+        height: 36px !important;
+        position: fixed !important;
+        top: 15px !important;
+        left: 210px !important;
         z-index: 9999 !important;
         display: flex !important;
         align-items: center !important;
         justify-content: center !important;
         box-shadow: 0 2px 10px rgba(0,0,0,0.3) !important;
+        color: white !important;
+        font-size: 16px !important;
+        font-weight: bold !important;
+        line-height: 36px !important;
     }
     [data-testid="stSidebarCollapseButton"]:hover {
         background-color: #059669 !important;
         border-color: #059669 !important;
     }
     [data-testid="stSidebarCollapseButton"] svg {
-        fill: white !important;
-        width: 24px !important;
-        height: 24px !important;
-    }
-    
-    /* Replace arrow icon with CSS arrow */
-    [data-testid="stSidebarCollapseButton"] > svg {
         display: none !important;
     }
+    
+    /* Add arrow text to button */
     [data-testid="stSidebarCollapseButton"]::after {
         content: "◀" !important;
-        color: white !important;
-        font-size: 18px !important;
-        font-weight: bold !important;
-    }
-    [data-testid="stSidebarCollapseButton"][="Expand sidebar"]::after {
-       aria-label content: "▶" !important;
     }
     
     /* Better mobile sidebar behavior */
