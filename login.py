@@ -11,10 +11,55 @@ from pymongo import MongoClient
 
 
 # MongoDB connection - MUST come from environment variable for security
-# Add to Streamlit Cloud secrets:
-# MONGODB_URI = "mongodb+srv://username:password@cluster.mongodb.net/?appName=AppName"
 MONGODB_URI = os.getenv("MONGODB_URI", "")
 MONGODB_DB = os.getenv("MONGODB_DB", "gridtodash")
+
+
+# Translations for login page
+LOGIN_TRANSLATIONS = {
+    "pt": {
+        "subtitle": "Transforme os seus ficheiros Excel/CSV em relatórios PDF profissionais",
+        "login_title": "Iniciar Sessão",
+        "email": "Email",
+        "password": "Password",
+        "login_button": "Entrar",
+        "error_empty": "Por favor, insere o email e password",
+        "error_invalid": "Email ou password incorretos",
+        "no_account": "Não tens conta?",
+        "signup_title": "Criar Conta",
+        "new_email": "Novo Email",
+        "new_password": "Nova Password",
+        "confirm_password": "Confirmar Password",
+        "signup_button": "Criar Conta",
+        "error_passwords_dont_match": "As passwords não coincidem",
+        "error_password_short": "A password deve ter pelo menos 6 caracteres",
+        "error_empty_fields": "Por favor, preenche todos os campos",
+        "error_email_exists": "Email já está registado",
+        "success_created": "Conta criada com sucesso!",
+        "error_connection": "Erro de conexão com base de dados",
+    },
+    "en": {
+        "subtitle": "Transform your Excel/CSV files into professional PDF reports",
+        "login_title": "Sign In",
+        "email": "Email",
+        "password": "Password",
+        "login_button": "Sign In",
+        "error_empty": "Please enter email and password",
+        "error_invalid": "Invalid email or password",
+        "no_account": "Don't have an account?",
+        "signup_title": "Create Account",
+        "new_email": "New Email",
+        "new_password": "New Password",
+        "confirm_password": "Confirm Password",
+        "signup_button": "Create Account",
+        "error_passwords_dont_match": "Passwords don't match",
+        "error_password_short": "Password must be at least 6 characters",
+        "error_empty_fields": "Please fill in all fields",
+        "error_email_exists": "Email is already registered",
+        "success_created": "Account created successfully!",
+        "error_connection": "Database connection error",
+    }
+}
 
 
 def get_mongo_client():
@@ -69,14 +114,17 @@ def verify_user(email, password):
 
 def create_user(email, password, name):
     """Create new user in MongoDB"""
+    lang = st.session_state.get("language", "pt")
+    t = LOGIN_TRANSLATIONS.get(lang, LOGIN_TRANSLATIONS["pt"])
+    
     collection = get_users_collection()
     if collection is None:
-        return {"success": False, "error": "Erro de conexão com base de dados"}
+        return {"success": False, "error": t["error_connection"]}
     
     # Check if user exists
     existing = collection.find_one({"email": email})
     if existing:
-        return {"success": False, "error": "Email já está registado"}
+        return {"success": False, "error": t["error_email_exists"]}
     
     # Create user
     password_hash = hash_password(password)
@@ -97,36 +145,44 @@ def show_login():
     """Show login page"""
     
     lang = st.session_state.get("language", "pt")
-    
-    # Get translations
-    if lang == "pt":
-        subtitle = "Transforme os seus ficheiros Excel/CSV em relatórios PDF profissionais"
-    else:
-        subtitle = "Transform your Excel/CSV files into professional PDF reports"
+    t = LOGIN_TRANSLATIONS.get(lang, LOGIN_TRANSLATIONS["pt"])
     
     # Center everything with columns
     col1, col2, col3 = st.columns([1, 3, 1])
     with col2:
         # Logo - centered
         if LOGO_BASE64:
-            st.markdown(f'<div style="text-align: center;"><img src="data:image/png;base64,{LOGO_BASE64}" width="120" style="margin-bottom: 10px;"></div>', unsafe_allow_html=True)
+            st.markdown(f'''
+            <div style="text-align: center; margin-bottom: 20px;">
+                <img src="data:image/png;base64,{LOGO_BASE64}" width="150" style="border-radius: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.1);">
+            </div>
+            ''', unsafe_allow_html=True)
         
-        # Title - centered
-        st.markdown('<div style="text-align: center;"><h1 style="color: #1E3A5F; font-size: 28px; margin: 10px 0;">GridToDash</h1></div>', unsafe_allow_html=True)
+        # Title - centered with gradient
+        st.markdown('''
+        <div style="text-align: center; margin-bottom: 10px;">
+            <h1 style="color: #1E3A5F; font-size: 36px; font-weight: 700; margin: 0;">GridToDash</h1>
+        </div>
+        ''', unsafe_allow_html=True)
         
         # Subtitle - centered
-        st.markdown(f'<div style="text-align: center;"><p style="color: #64748B; font-size: 14px; margin-bottom: 20px;">{subtitle}</p></div>', unsafe_allow_html=True)
+        st.markdown(f'<div style="text-align: center; margin-bottom: 30px;"><p style="color: #64748B; font-size: 14px;">{t["subtitle"]}</p></div>', unsafe_allow_html=True)
         
-        # Email login form
-        st.markdown("---")
-        st.markdown('<div style="text-align: center;"><p style="color: #1E3A5F; font-size: 16px; margin-bottom: 15px;">Iniciar Sessão</p></div>', unsafe_allow_html=True)
+        # Login form container
+        st.markdown('''
+        <div style="background: white; border-radius: 16px; padding: 30px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); margin-bottom: 20px;">
+        ''', unsafe_allow_html=True)
         
-        email = st.text_input("Email", key="login_email")
-        password = st.text_input("Password", type="password", key="login_password")
+        # Login title
+        st.markdown(f'<h3 style="text-align: center; color: #1E3A5F; margin-bottom: 20px;">{t["login_title"]}</h3>', unsafe_allow_html=True)
         
-        if st.button("Entrar", type="primary"):
+        # Email and Password inputs
+        email = st.text_input(t["email"], key="login_email")
+        password = st.text_input(t["password"], type="password", key="login_password")
+        
+        # Login button
+        if st.button(t["login_button"], type="primary", use_container_width=True):
             if email and password:
-                # Verify user
                 user = verify_user(email, password)
                 if user:
                     st.session_state.authenticated = True
@@ -134,65 +190,81 @@ def show_login():
                     st.session_state.user_name = user.get("name", "")
                     st.rerun()
                 else:
-                    st.error("Email ou password incorretos")
+                    st.error(t["error_invalid"])
             else:
-                st.error("Por favor, insere o email e password")
+                st.error(t["error_empty"])
         
-        # Sign up link
-        st.markdown("---")
-        st.markdown('<div style="text-align: center;"><p style="color: #64748B; font-size: 14px;">Não tens conta?</p></div>', unsafe_allow_html=True)
+        st.markdown('</div>', unsafe_allow_html=True)
         
-        new_email = st.text_input("Novo Email", key="signup_email")
-        new_password = st.text_input("Nova Password", type="password", key="signup_password")
-        confirm_password = st.text_input("Confirmar Password", type="password", key="signup_confirm")
+        # Sign up section
+        st.markdown('''
+        <div style="background: white; border-radius: 16px; padding: 30px; box-shadow: 0 4px 20px rgba(0,0,0,0.08);">
+        ''', unsafe_allow_html=True)
         
-        if st.button("Criar Conta"):
+        st.markdown(f'<p style="text-align: center; color: #64748B; margin-bottom: 15px;">{t["no_account"]}</p>', unsafe_allow_html=True)
+        
+        new_email = st.text_input(t["new_email"], key="signup_email")
+        new_password = st.text_input(t["new_password"], type="password", key="signup_password")
+        confirm_password = st.text_input(t["confirm_password"], type="password", key="signup_confirm")
+        
+        if st.button(t["signup_button"], use_container_width=True):
             if new_email and new_password and confirm_password:
                 if new_password != confirm_password:
-                    st.error("As passwords não coincidem")
+                    st.error(t["error_passwords_dont_match"])
                 elif len(new_password) < 6:
-                    st.error("A password deve ter pelo menos 6 caracteres")
+                    st.error(t["error_password_short"])
                 else:
-                    # Create user
                     result = create_user(new_email, new_password, new_email.split("@")[0])
                     if result and result.get("success"):
                         st.session_state.authenticated = True
                         st.session_state.user_email = new_email
                         st.session_state.user_name = new_email.split("@")[0]
-                        st.success("Conta criada com sucesso!")
+                        st.success(t["success_created"])
                         st.rerun()
                     else:
-                        error_msg = result.get("error", "Erro desconhecido") if result else "Erro de conexão"
-                        st.error(f"Erro: {error_msg}")
+                        error_msg = result.get("error", "Error") if result else "Error"
+                        st.error(f"Error: {error_msg}")
             else:
-                st.error("Por favor, preenche todos os campos")
+                st.error(t["error_empty_fields"])
         
-        # Powered by - centered
-        st.markdown("---")
-        st.markdown('<div style="text-align: center;"><p style="color: #94A3B8; font-size: 12px; margin-top: 15px;">Powered by <b>IterioTech</b></div>', unsafe_allow_html=True)
+        st.markdown('</div>', unsafe_allow_html=True)
         
-        # Language selector - centered
+        # Powered by
+        st.markdown(f'''
+        <div style="text-align: center; margin-top: 25px;">
+            <p style="color: #94A3B8; font-size: 12px;">Powered by <b>IterioTech</b></p>
+        </div>
+        ''', unsafe_allow_html=True)
+        
+        # Language selector
         col_l1, col_l2, col_l3 = st.columns([1, 1, 1])
         with col_l2:
             new_lang = st.selectbox(
-                "Idioma",
+                "Idioma / Language",
                 options=["pt", "en"],
-                format_func=lambda x: "PT" if x == "pt" else "EN",
+                format_func=lambda x: "🇵🇹 PT" if x == "pt" else "🇬🇧 EN",
                 key="lang_select"
             )
             if new_lang != lang:
                 st.session_state.language = new_lang
                 st.rerun()
     
-    # CSS to make selectbox narrower and centered
+    # CSS for styling
     st.markdown("""
     <style>
     [data-testid="stSelectbox"] {
-        max-width: 100px;
+        max-width: 150px;
         margin: 0 auto;
     }
     div[data-testid="stHorizontalBlock"] {
         justify-content: center;
+    }
+    .stTextInput > div > div > input {
+        border-radius: 8px;
+    }
+    .stButton > button {
+        border-radius: 8px;
+        font-weight: 600;
     }
     </style>
     """, unsafe_allow_html=True)
