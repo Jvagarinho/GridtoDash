@@ -37,6 +37,20 @@ LOGIN_TRANSLATIONS = {
         "error_email_exists": "Email já está registado",
         "success_created": "Conta criada com sucesso!",
         "error_connection": "Erro de conexão com base de dados",
+        "forgot_password": "Esqueceu a password?",
+        "recover_title": "Recuperar Password",
+        "recover_instruction": "Introduz o teu email para receberes um código de recuperação",
+        "recover_button": "Gerar Código",
+        "reset_title": "Nova Password",
+        "reset_instruction": "Introduz o código que recebeste e a nova password",
+        "reset_button": "Alterar Password",
+        "code": "Código de Recuperação",
+        "new_password_repeat": "Nova Password",
+        "error_invalid_code": "Código inválido",
+        "error_user_not_found": "Email não encontrado",
+        "success_recovery": "Código gerado! Copia e usa para redefinir a tua password.",
+        "success_reset": "Password alterada com sucesso!",
+        "back_to_login": "Voltar ao Login",
     },
     "en": {
         "subtitle": "Transform your Excel/CSV files into professional PDF reports",
@@ -58,6 +72,20 @@ LOGIN_TRANSLATIONS = {
         "error_email_exists": "Email is already registered",
         "success_created": "Account created successfully!",
         "error_connection": "Database connection error",
+        "forgot_password": "Forgot password?",
+        "recover_title": "Recover Password",
+        "recover_instruction": "Enter your email to receive a recovery code",
+        "recover_button": "Generate Code",
+        "reset_title": "New Password",
+        "reset_instruction": "Enter the code you received and your new password",
+        "reset_button": "Change Password",
+        "code": "Recovery Code",
+        "new_password_repeat": "New Password",
+        "error_invalid_code": "Invalid code",
+        "error_user_not_found": "Email not found",
+        "success_recovery": "Code generated! Copy and use it to reset your password.",
+        "success_reset": "Password changed successfully!",
+        "back_to_login": "Back to Login",
     }
 }
 
@@ -141,6 +169,59 @@ def create_user(email, password, name):
         return {"success": False, "error": str(e)}
 
 
+import secrets
+
+
+def generate_recovery_code(email):
+    """Generate a recovery code for the user"""
+    lang = st.session_state.get("language", "pt")
+    t = LOGIN_TRANSLATIONS.get(lang, LOGIN_TRANSLATIONS["pt"])
+    
+    collection = get_users_collection()
+    if collection is None:
+        return {"success": False, "error": t["error_connection"]}
+    
+    user = collection.find_one({"email": email})
+    if not user:
+        return {"success": False, "error": t["error_user_not_found"]}
+    
+    code = secrets.token_hex(8)
+    
+    try:
+        collection.update_one(
+            {"email": email},
+            {"$set": {"recoveryCode": code}}
+        )
+        return {"success": True, "code": code}
+    except Exception as e:
+        return {"success": False, "error": str(e)}
+
+
+def reset_password(email, code, new_password):
+    """Reset user password using recovery code"""
+    lang = st.session_state.get("language", "pt")
+    t = LOGIN_TRANSLATIONS.get(lang, LOGIN_TRANSLATIONS["pt"])
+    
+    collection = get_users_collection()
+    if collection is None:
+        return {"success": False, "error": t["error_connection"]}
+    
+    user = collection.find_one({"email": email, "recoveryCode": code})
+    if not user:
+        return {"success": False, "error": t["error_invalid_code"]}
+    
+    password_hash = hash_password(new_password)
+    
+    try:
+        collection.update_one(
+            {"email": email},
+            {"$set": {"passwordHash": password_hash}, "$unset": {"recoveryCode": ""}}
+        )
+        return {"success": True}
+    except Exception as e:
+        return {"success": False, "error": str(e)}
+
+
 def show_login():
     """Show login page"""
     
@@ -204,6 +285,108 @@ def show_login():
                         st.error(t["error_invalid"])
                 else:
                     st.error(t["error_empty"])
+        
+        # Forgot Password link
+        if "show_recovery" not in st.session_state:
+            st.session_state.show_recovery = False
+        if "show_reset" not in st.session_state:
+            st.session_state.show_reset = False
+        
+        if not st.session_state.show_recovery and not st.session_state.show_reset:
+            if st.button(t["forgot_password"], key="forgot_password_btn"):
+                st.session_state.show_recovery = True
+                st.rerun()
+        
+        # Recovery form - generate code
+        if st.session_state.show_recovery and not st.session_state.show_reset:
+            with st.container():
+                st.markdown('''
+                <div style="background: white; border-radius: 16px; padding: 5px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); margin-top: 20px;">
+                    <h3 style="text-align: center; color: #1E3A5F; margin-bottom: 0px; font-size: 22px; font-weight: 500;">''' + t["recover_title"] + '''</h3>
+                </div>
+                ''', unsafe_allow_html=True)
+                
+                st.markdown(f'<p style="text-align: center; color: #64748B; margin-bottom: 15px;">{t["recover_instruction"]}</p>', unsafe_allow_html=True)
+                
+                recover_email = st.text_input(t["email"], key="recover_email")
+                
+                col_r1, col_r2 = st.columns([1, 1])
+                with col_r1:
+                    if st.button(t["recover_button"], type="primary", use_container_width=True):
+                        if recover_email:
+                            result = generate_recovery_code(recover_email)
+                            if result.get("success"):
+                                st.session_state.recovery_code = result["code"]
+                                st.session_state.recovery_email = recover_email
+                                st.session_state.show_recovery = False
+                                st.session_state.show_reset = True
+                                st.rerun()
+                            else:
+                                st.error(result.get("error", t["error_connection"]))
+                        else:
+                            st.error(t["error_empty_fields"])
+                with col_r2:
+                    if st.button(t["back_to_login"], use_container_width=True):
+                        st.session_state.show_recovery = False
+                        st.rerun()
+        
+        # Reset form - enter new password
+        if st.session_state.show_reset:
+            with st.container():
+                st.markdown('''
+                <div style="background: white; border-radius: 16px; padding: 5px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); margin-top: 20px;">
+                    <h3 style="text-align: center; color: #1E3A5F; margin-bottom: 0px; font-size: 22px; font-weight: 500;">''' + t["reset_title"] + '''</h3>
+                </div>
+                ''', unsafe_allow_html=True)
+                
+                st.markdown(f'<p style="text-align: center; color: #64748B; margin-bottom: 15px;">{t["reset_instruction"]}</p>', unsafe_allow_html=True)
+                
+                if hasattr(st.session_state, 'recovery_code'):
+                    st.markdown(f'''
+                    <div style="background: #FEF3C7; border-radius: 8px; padding: 15px; margin-bottom: 15px; text-align: center;">
+                        <p style="margin: 0; color: #92400E; font-weight: bold;">''' + t["success_recovery"] + '''</p>
+                        <p style="margin: 10px 0 0 0; font-size: 24px; font-weight: bold; letter-spacing: 2px; color: #059669;">{st.session_state.recovery_code}</p>
+                    </div>
+                    ''', unsafe_allow_html=True)
+                
+                reset_code = st.text_input(t["code"], key="reset_code")
+                new_pass = st.text_input(t["new_password_repeat"], type="password", key="new_password_reset")
+                confirm_pass = st.text_input(t["confirm_password"], type="password", key="confirm_password_reset")
+                
+                col_r1, col_r2 = st.columns([1, 1])
+                with col_r1:
+                    if st.button(t["reset_button"], type="primary", use_container_width=True):
+                        if reset_code and new_pass and confirm_pass:
+                            if new_pass != confirm_pass:
+                                st.error(t["error_passwords_dont_match"])
+                            elif len(new_pass) < 6:
+                                st.error(t["error_password_short"])
+                            else:
+                                result = reset_password(
+                                    st.session_state.recovery_email,
+                                    reset_code,
+                                    new_pass
+                                )
+                                if result.get("success"):
+                                    st.session_state.show_reset = False
+                                    if hasattr(st.session_state, 'recovery_code'):
+                                        del st.session_state.recovery_code
+                                    if hasattr(st.session_state, 'recovery_email'):
+                                        del st.session_state.recovery_email
+                                    st.success(t["success_reset"])
+                                    st.rerun()
+                                else:
+                                    st.error(result.get("error", t["error_connection"]))
+                        else:
+                            st.error(t["error_empty_fields"])
+                with col_r2:
+                    if st.button(t["back_to_login"], use_container_width=True):
+                        st.session_state.show_reset = False
+                        if hasattr(st.session_state, 'recovery_code'):
+                            del st.session_state.recovery_code
+                        if hasattr(st.session_state, 'recovery_email'):
+                            del st.session_state.recovery_email
+                        st.rerun()
         
         # Sign up form - all inside one white box
         with st.container():
