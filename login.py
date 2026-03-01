@@ -278,19 +278,18 @@ def show_login():
         # Subtitle - centered
         st.markdown(f'<div style="text-align: center; margin-bottom: 15px;"><p style="color: #64748B; font-size: 14px;">{t["subtitle"]}</p></div>', unsafe_allow_html=True)
         
-        # Language selector - centered
-        col_l1, col_l2, col_l3 = st.columns([1, 1, 1])
+        # Language selector - buttons PT/EN
+        col_l1, col_l2, col_l3 = st.columns([1, 2, 1])
         with col_l2:
-            new_lang = st.selectbox(
-                "Idioma" if lang == "pt" else "Language",
-                options=["pt", "en"],
-                format_func=lambda x: "PT" if x == "pt" else "EN",
-                key="lang_select",
-                label_visibility="collapsed"
-            )
-            if new_lang != lang:
-                st.session_state.language = new_lang
-                st.rerun()
+            col_pt, col_en = st.columns(2)
+            with col_pt:
+                if st.button("PT", use_container_width=True, type="primary" if lang == "pt" else "secondary"):
+                    st.session_state.language = "pt"
+                    st.rerun()
+            with col_en:
+                if st.button("EN", use_container_width=True, type="primary" if lang == "en" else "secondary"):
+                    st.session_state.language = "en"
+                    st.rerun()
         
         # Login form - all inside one white box
         with st.container():
