@@ -338,7 +338,7 @@ st.markdown("""
         background: #047857 !important;
     }
     [data-testid="stSidebarCollapseButton"] svg {
-        fill: white !important;
+        fill: #FFFFFF !important;
         width: 16px !important;
         height: 16px !important;
     }
