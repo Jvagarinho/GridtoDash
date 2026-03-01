@@ -295,6 +295,7 @@ def show_login():
                 font-weight: bold;
                 font-size: 14px;
                 color: #64748B;
+                cursor: pointer;
             }}
             .toggle-label.active {{
                 color: #059669;
@@ -303,10 +304,13 @@ def show_login():
                 position: relative;
                 width: 56px;
                 height: 28px;
-                background: #059669;
+                background: #64748B;
                 border-radius: 28px;
                 cursor: pointer;
                 transition: 0.3s;
+            }}
+            .toggle-switch.active {{
+                background: #059669;
             }}
             .toggle-switch::before {{
                 content: "";
@@ -320,20 +324,39 @@ def show_login():
                 transition: 0.3s;
                 box-shadow: 0 2px 4px rgba(0,0,0,0.2);
             }}
-            .toggle-switch.en::before {{
+            .toggle-switch.active::before {{
                 transform: translateX(28px);
             }}
             </style>
-            <div class="toggle-container">
-                <span class="toggle-label {"active" if lang == "pt" else ""}">PT</span>
-                <div class="toggle-switch {"en" if lang == "en" else ""}" onclick="document.querySelector('button[key=\\'lang_toggle_btn\\']').click()"></div>
-                <span class="toggle-label {"active" if lang == "en" else ""}">EN</span>
+            <div class="toggle-container" id="toggle-container">
+                <span class="toggle-label" onclick="clickToggle()">PT</span>
+                <div class="toggle-switch {"active" if lang == "en" else ""}" id="toggle-switch" onclick="clickToggle()"></div>
+                <span class="toggle-label" onclick="clickToggle()">EN</span>
             </div>
             ''', unsafe_allow_html=True)
             
-            if st.button("Toggle", key="lang_toggle_btn", help="Toggle language"):
-                st.session_state.language = new_lang
+            # Use checkbox to track state
+            is_en = st.checkbox("", value=(lang == "en"), key="lang_checkbox", label_visibility="collapsed")
+            if is_en and lang == "pt":
+                st.session_state.language = "en"
                 st.rerun()
+            elif not is_en and lang == "en":
+                st.session_state.language = "pt"
+                st.rerun()
+            
+            # Sync checkbox with toggle
+            st.markdown(f"""
+            <script>
+            const checkbox = window.parent.document.querySelector('input[key="lang_checkbox"]');
+            const toggle = document.getElementById('toggle-switch');
+            if (checkbox && toggle) {{
+                checkbox.style.display = 'none';
+                function clickToggle() {{
+                    checkbox.click();
+                }}
+            }}
+            </script>
+            """, unsafe_allow_html=True)
         
         # Login form - all inside one white box
         with st.container():
