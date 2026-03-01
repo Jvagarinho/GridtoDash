@@ -309,17 +309,24 @@ def show_login():
             .forgot-password-link a:hover {{
                 color: #047857;
             }}
-            #forgot-btn {{
-                display: none;
+            button[key="forgot_password_btn"] {{
+                display: none !important;
             }}
             </style>
             <div class="forgot-password-link">
-                <a href="javascript:void(0)" onclick="document.getElementById('forgot-btn').click()">{t["forgot_password"]}</a>
+                <a href="#" id="forgot-link">{t["forgot_password"]}</a>
             </div>
             ''', unsafe_allow_html=True)
-            if st.button(" ", key="forgot_password_btn", help=t["forgot_password"]):
+            if st.button(t["forgot_password"], key="forgot_password_btn"):
                 st.session_state.show_recovery = True
                 st.rerun()
+            st.markdown("""
+            <script>
+            document.getElementById('forgot-link').addEventListener('click', function() {
+                document.querySelector('button[key="forgot_password_btn"]').click();
+            });
+            </script>
+            """, unsafe_allow_html=True)
         
         # Recovery form - generate code
         if st.session_state.show_recovery and not st.session_state.show_reset:
