@@ -228,6 +228,20 @@ def show_login():
     lang = st.session_state.get("language", "pt")
     t = LOGIN_TRANSLATIONS.get(lang, LOGIN_TRANSLATIONS["pt"])
     
+    # CSS to hide forgot password button
+    st.markdown("""
+    <style>
+    button[kind="secondary"][key="forgot_password_btn"] {
+        display: none !important;
+        visibility: hidden !important;
+        height: 0 !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        border: none !important;
+    }
+    </style>
+    """, unsafe_allow_html=True)
+    
     # Center everything with columns
     col1, col2, col3 = st.columns([1, 3, 1])
     with col2:
@@ -320,19 +334,6 @@ def show_login():
                 st.rerun()
             
             st.button(t["forgot_password"], key="forgot_password_btn", on_click=trigger_recovery)
-            
-            st.markdown("""
-            <script>
-            const btn = document.querySelector('button[key="forgot_password_btn"]');
-            if (btn) btn.style.display = 'none';
-            const link = document.getElementById('forgot-link');
-            if (link && btn) {
-                link.addEventListener('click', function() {
-                    btn.click();
-                });
-            }
-            </script>
-            """, unsafe_allow_html=True)
         
         # Recovery form - generate code
         if st.session_state.show_recovery and not st.session_state.show_reset:
