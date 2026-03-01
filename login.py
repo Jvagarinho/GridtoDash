@@ -293,6 +293,7 @@ def show_login():
             st.session_state.show_reset = False
         
         if not st.session_state.show_recovery and not st.session_state.show_reset:
+            st.markdown(f'<div style="text-align: center; margin-top: 10px; margin-bottom: 20px;"><a href="#" onclick="document.querySelector(\'[key=\"forgot_password_btn\"]\').click(); return false;" style="color: #059669; text-decoration: underline; cursor: pointer;">{t["forgot_password"]}</a></div>', unsafe_allow_html=True)
             if st.button(t["forgot_password"], key="forgot_password_btn"):
                 st.session_state.show_recovery = True
                 st.rerun()
