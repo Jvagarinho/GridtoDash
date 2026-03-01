@@ -286,6 +286,7 @@ def show_login():
             justify-content: center;
             margin: 0 auto 20px auto;
             width: fit-content;
+            padding: 0 20px;
         }
         .lang-toggle-container .stRadio {
             display: flex;
