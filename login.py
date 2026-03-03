@@ -228,9 +228,10 @@ def show_login():
     lang = st.session_state.get("language", "pt")
     t = LOGIN_TRANSLATIONS.get(lang, LOGIN_TRANSLATIONS["pt"])
     
-    # Language selector in sidebar - visible directly
+    # Language selector in sidebar
     with st.sidebar:
-        st.markdown("### 🌐 Idioma")
+        # Legend/label for language selector
+        st.caption("Idioma / Language")
         
         # Two columns for the buttons
         col1, col2 = st.columns(2)
