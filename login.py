@@ -228,38 +228,53 @@ def show_login():
     lang = st.session_state.get("language", "pt")
     t = LOGIN_TRANSLATIONS.get(lang, LOGIN_TRANSLATIONS["pt"])
     
-    # Language selector in sidebar with styling
+    # Language selector in sidebar with toggle styling
     with st.sidebar:
         st.markdown("""
         <style>
-        [data-testid="stSidebar"] [data-testid="stSegmentedControl"] {
-            width: 100%;
-        }
-        [data-testid="stSidebar"] [data-testid="stSegmentedControl"] > div {
+        /* Toggle switch styling */
+        [data-testid="stSidebar"] .lang-toggle {
+            display: flex;
+            background: #E2E8F0;
+            border-radius: 20px;
+            padding: 4px;
             gap: 0 !important;
         }
-        [data-testid="stSidebar"] [data-testid="stSegmentedControl"] label {
-            background: #E2E8F0 !important;
+        [data-testid="stSidebar"] .lang-toggle label {
+            background: transparent !important;
             color: #64748B !important;
-            padding: 8px 16px !important;
+            padding: 8px 20px !important;
             font-weight: 600 !important;
             border: none !important;
+            border-radius: 16px !important;
+            cursor: pointer !important;
+            flex: 1;
+            text-align: center;
         }
-        [data-testid="stSidebar"] [data-testid="stSegmentedControl"] label:has(input:checked) {
+        [data-testid="stSidebar"] .lang-toggle label:has(input:checked) {
             background: #1E3A5F !important;
             color: white !important;
         }
+        [data-testid="stSidebar"] .lang-toggle input {
+            display: none;
+        }
         </style>
+        <div class="lang-toggle">
         """, unsafe_allow_html=True)
         
-        selected_lang = st.segmented_control(
-            "Idioma / Language",
+        selected = st.radio(
+            "",
             options=["PT", "EN"],
-            default="PT" if lang == "pt" else "EN",
-            label_visibility="visible"
+            horizontal=True,
+            label_visibility="collapsed",
+            index=0 if lang == "pt" else 1,
+            key="lang_toggle"
         )
-        if selected_lang:
-            new_lang = "pt" if selected_lang == "PT" else "en"
+        
+        st.markdown("</div>", unsafe_allow_html=True)
+        
+        if selected:
+            new_lang = "pt" if selected == "PT" else "en"
             if new_lang != lang:
                 st.session_state.language = new_lang
                 st.rerun()
