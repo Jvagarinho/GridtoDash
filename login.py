@@ -251,24 +251,19 @@ def show_login():
     [data-testid="stSelectbox"] > div {
         justify-content: center;
     }
-    /* Center column for login content */
-    div[data-testid="stHorizontalBlock"] > div:nth-child(2) {
-        display: flex !important;
-        flex-direction: column !important;
-        align-items: center !important;
-    }
-    /* Flex wrapper around language toggle */
-    div[style*="display: flex"] div[data-testid="stRadio"] {
+    /* Language toggle - full centering via flex wrapper */
+    div[style*="display: flex; justify-content: center"] div[data-testid="stRadio"] {
         display: flex !important;
         justify-content: center !important;
+        width: auto !important;
     }
-    /* Toggle button styling - horizontal layout */
-    div[data-testid="stRadio"] > div {
+    div[style*="display: flex; justify-content: center"] div[data-testid="stRadio"] > div {
         display: flex !important;
         flex-direction: row !important;
         gap: 0 !important;
         justify-content: center !important;
     }
+    /* Toggle button styling */
     div[data-testid="stRadio"] label {
         background: #E2E8F0 !important;
         padding: 10px 24px !important;
