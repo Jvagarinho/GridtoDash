@@ -267,9 +267,15 @@ def show_login():
         border: 2px solid #E2E8F0 !important;
         border-radius: 8px !important;
         padding: 10px !important;
+        box-shadow: none !important;
+        outline: none !important;
     }
     div[data-testid="stTextInput"] input:focus {
         border-color: #1E3A5F !important;
+        outline: none !important;
+        box-shadow: none !important;
+    }
+    div[data-testid="stTextInput"] input:focus-visible {
         outline: none !important;
         box-shadow: none !important;
     }
@@ -279,9 +285,24 @@ def show_login():
         border: 2px solid #E2E8F0 !important;
         border-radius: 8px !important;
         padding: 10px !important;
+        box-shadow: none !important;
+        outline: none !important;
     }
     div[data-testid="stTextInput"] input[type="password"]:focus {
         border-color: #1E3A5F !important;
+        outline: none !important;
+        box-shadow: none !important;
+    }
+    div[data-testid="stTextInput"] input[type="password"]:focus-visible {
+        outline: none !important;
+        box-shadow: none !important;
+    }
+    /* Remove all focus outlines globally */
+    *:focus {
+        outline: none !important;
+        box-shadow: none !important;
+    }
+    *:focus-visible {
         outline: none !important;
         box-shadow: none !important;
     }
