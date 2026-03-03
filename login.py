@@ -228,19 +228,20 @@ def show_login():
     lang = st.session_state.get("language", "pt")
     t = LOGIN_TRANSLATIONS.get(lang, LOGIN_TRANSLATIONS["pt"])
     
-    # Language selector in sidebar expander
+    # Language selector in sidebar - visible directly
     with st.sidebar:
-        with st.expander("🌐 Idioma / Language", expanded=False):
-            # Two columns for the buttons
-            col1, col2 = st.columns(2)
-            with col1:
-                if st.button("PT", use_container_width=True, key="btn_pt_sidebar"):
-                    st.session_state.language = "pt"
-                    st.rerun()
-            with col2:
-                if st.button("EN", use_container_width=True, key="btn_en_sidebar"):
-                    st.session_state.language = "en"
-                    st.rerun()
+        st.markdown("### 🌐 Idioma")
+        
+        # Two columns for the buttons
+        col1, col2 = st.columns(2)
+        with col1:
+            if st.button("PT", use_container_width=True, key="btn_pt_sidebar"):
+                st.session_state.language = "pt"
+                st.rerun()
+        with col2:
+            if st.button("EN", use_container_width=True, key="btn_en_sidebar"):
+                st.session_state.language = "en"
+                st.rerun()
         
         # Add active styling based on current language
         st.markdown(f"""
