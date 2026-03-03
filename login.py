@@ -228,8 +228,30 @@ def show_login():
     lang = st.session_state.get("language", "pt")
     t = LOGIN_TRANSLATIONS.get(lang, LOGIN_TRANSLATIONS["pt"])
     
-    # Language selector in sidebar
+    # Language selector in sidebar with styling
     with st.sidebar:
+        st.markdown("""
+        <style>
+        [data-testid="stSidebar"] [data-testid="stSegmentedControl"] {
+            width: 100%;
+        }
+        [data-testid="stSidebar"] [data-testid="stSegmentedControl"] > div {
+            gap: 0 !important;
+        }
+        [data-testid="stSidebar"] [data-testid="stSegmentedControl"] label {
+            background: #E2E8F0 !important;
+            color: #64748B !important;
+            padding: 8px 16px !important;
+            font-weight: 600 !important;
+            border: none !important;
+        }
+        [data-testid="stSidebar"] [data-testid="stSegmentedControl"] label:has(input:checked) {
+            background: #1E3A5F !important;
+            color: white !important;
+        }
+        </style>
+        """, unsafe_allow_html=True)
+        
         selected_lang = st.segmented_control(
             "Idioma / Language",
             options=["PT", "EN"],
