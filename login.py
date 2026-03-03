@@ -292,10 +292,8 @@ def show_login():
         # Subtitle - centered
         st.markdown(f'<div style="text-align: center; margin-bottom: 15px;"><p style="color: #64748B; font-size: 14px;">{t["subtitle"]}</p></div>', unsafe_allow_html=True)
         
-        # Language toggle - centered with CSS at app level
-        st.markdown("""
-        <div class="lang-toggle" style="display: flex; justify-content: center; margin-bottom: 20px;">
-        """, unsafe_allow_html=True)
+        # Language toggle - centered using text-align like logo/title
+        st.markdown('<div style="text-align: center; margin-bottom: 20px;">', unsafe_allow_html=True)
         
         current_lang = st.session_state.get("language", "pt")
         
@@ -312,7 +310,7 @@ def show_login():
                 st.session_state.language = new_lang
                 st.rerun()
         
-        st.markdown("</div>", unsafe_allow_html=True)
+        st.markdown('</div>', unsafe_allow_html=True)
         
         # Login form - all inside one white box
         with st.container():
