@@ -228,6 +228,20 @@ def show_login():
     lang = st.session_state.get("language", "pt")
     t = LOGIN_TRANSLATIONS.get(lang, LOGIN_TRANSLATIONS["pt"])
     
+    # Language selector in sidebar
+    with st.sidebar:
+        selected_lang = st.segmented_control(
+            "Idioma / Language",
+            options=["PT", "EN"],
+            default="PT" if lang == "pt" else "EN",
+            label_visibility="visible"
+        )
+        if selected_lang:
+            new_lang = "pt" if selected_lang == "PT" else "en"
+            if new_lang != lang:
+                st.session_state.language = new_lang
+                st.rerun()
+    
     # CSS for styling elements
     st.markdown("""
     <style>
@@ -288,22 +302,6 @@ def show_login():
             <h1 style="color: #1E3A5F; font-size: 36px; font-weight: 700; margin: 0;">GridToDash</h1>
         </div>
         ''', unsafe_allow_html=True)
-        
-        # Language toggle - segmented control (works but not perfectly centered)
-        current_lang = st.session_state.get("language", "pt")
-        
-        selected = st.segmented_control(
-            "",
-            options=["PT", "EN"],
-            default="PT" if current_lang == "pt" else "EN",
-            label_visibility="collapsed"
-        )
-        
-        if selected:
-            new_lang = "pt" if selected == "PT" else "en"
-            if new_lang != current_lang:
-                st.session_state.language = new_lang
-                st.rerun()
         
         # Subtitle - centered
         st.markdown(f'<div style="text-align: center; margin-bottom: 15px;"><p style="color: #64748B; font-size: 14px;">{t["subtitle"]}</p></div>', unsafe_allow_html=True)
