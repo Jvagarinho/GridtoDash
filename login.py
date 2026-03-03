@@ -261,21 +261,24 @@ def show_login():
     # CSS for styling elements
     st.markdown("""
     <style>
-    /* Style text input fields */
+    /* Style text input fields - completely remove all outlines */
     div[data-testid="stTextInput"] input {
         background-color: #FFFFFF !important;
         border: 2px solid #E2E8F0 !important;
         border-radius: 8px !important;
         padding: 10px !important;
+        outline: none !important;
+        outline-width: 0 !important;
+        box-shadow: none !important;
     }
     div[data-testid="stTextInput"] input:focus,
     div[data-testid="stTextInput"] input:active,
-    div[data-testid="stTextInput"] input:focus-within {
+    div[data-testid="stTextInput"] input:focus-within,
+    div[data-testid="stTextInput"] input:-moz-focusing {
         border: 2px solid #1E3A5F !important;
         outline: none !important;
-        outline-offset: 0 !important;
+        outline-width: 0 !important;
         box-shadow: none !important;
-        -webkit-outline: none !important;
     }
     /* Style password input fields */
     div[data-testid="stTextInput"] input[type="password"] {
@@ -283,24 +286,32 @@ def show_login():
         border: 2px solid #E2E8F0 !important;
         border-radius: 8px !important;
         padding: 10px !important;
+        outline: none !important;
+        outline-width: 0 !important;
+        box-shadow: none !important;
     }
     div[data-testid="stTextInput"] input[type="password"]:focus,
     div[data-testid="stTextInput"] input[type="password"]:active,
-    div[data-testid="stTextInput"] input[type="password"]:focus-within {
+    div[data-testid="stTextInput"] input[type="password"]:focus-within,
+    div[data-testid="stTextInput"] input[type="password"]:-moz-focusing {
         border: 2px solid #1E3A5F !important;
         outline: none !important;
-        outline-offset: 0 !important;
+        outline-width: 0 !important;
         box-shadow: none !important;
-        -webkit-outline: none !important;
     }
-    /* Remove all focus outlines globally */
+    /* Kill ALL outlines everywhere */
+    input,
     input:focus,
     input:active,
     input:focus-within,
-    *:focus,
-    *:active,
-    *:focus-within {
+    textarea,
+    textarea:focus,
+    textarea:active,
+    select,
+    select:focus,
+    * {
         outline: none !important;
+        outline-width: 0 !important;
         outline-offset: 0 !important;
         box-shadow: none !important;
         -webkit-outline: none !important;
