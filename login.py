@@ -340,9 +340,9 @@ def show_login():
                 # Inject CSS for EN button
                 st.markdown(f'<style>button[key="btn_en"] {{ {en_style} padding: 8px 24px; border: none; border-radius: 0 20px 20px 0; cursor: pointer; font-weight: 600; }}</style>', unsafe_allow_html=True)
             
-             st.markdown('</div>', unsafe_allow_html=True)
-         
-         # Login form - all inside one white box
+            st.markdown('</div>', unsafe_allow_html=True)
+        
+        # Login form - all inside one white box
         with st.container():
             st.markdown(f'''
             <div style="background: white; border-radius: 16px; padding: 5px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); margin-bottom: 20px;">
