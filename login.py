@@ -257,11 +257,17 @@ def show_login():
         flex-direction: column !important;
         align-items: center !important;
     }
+    /* Flex wrapper around language toggle */
+    div[style*="display: flex"] div[data-testid="stRadio"] {
+        display: flex !important;
+        justify-content: center !important;
+    }
     /* Toggle button styling - horizontal layout */
     div[data-testid="stRadio"] > div {
         display: flex !important;
         flex-direction: row !important;
         gap: 0 !important;
+        justify-content: center !important;
     }
     div[data-testid="stRadio"] label {
         background: #E2E8F0 !important;
@@ -310,8 +316,10 @@ def show_login():
         # Subtitle - centered
         st.markdown(f'<div style="text-align: center; margin-bottom: 15px;"><p style="color: #64748B; font-size: 14px;">{t["subtitle"]}</p></div>', unsafe_allow_html=True)
         
-        # Language toggle - center with text-align
-        st.markdown('<div style="text-align: center; margin-bottom: 20px;">', unsafe_allow_html=True)
+        # Language toggle - center using flex wrapper
+        st.markdown("""
+        <div style="display: flex; justify-content: center; margin-bottom: 20px;">
+        """, unsafe_allow_html=True)
         
         selected_lang = st.radio(
             "",
