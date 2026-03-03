@@ -251,29 +251,29 @@ def show_login():
     [data-testid="stSelectbox"] > div {
         justify-content: center;
     }
-    /* Language toggle - full centering via flex wrapper */
-    div[style*="display: flex; justify-content: center"] div[data-testid="stRadio"] {
+    /* Center column for login content */
+    div[data-testid="stHorizontalBlock"] > div:nth-child(2) {
         display: flex !important;
-        justify-content: center !important;
-        width: auto !important;
+        flex-direction: column !important;
+        align-items: center !important;
     }
-    div[style*="display: flex; justify-content: center"] div[data-testid="stRadio"] > div {
+    /* Language toggle - center and style as pill */
+    div[data-testid="stRadio"] > div {
         display: flex !important;
         flex-direction: row !important;
         gap: 0 !important;
         justify-content: center !important;
     }
-    /* Toggle button styling */
     div[data-testid="stRadio"] label {
         background: #E2E8F0 !important;
-        padding: 10px 24px !important;
+        padding: 8px 24px !important;
         cursor: pointer !important;
         font-weight: 600 !important;
         font-size: 14px !important;
         color: #64748B !important;
         border: none !important;
         margin: 0 !important;
-        min-width: 80px !important;
+        min-width: 70px !important;
         text-align: center !important;
     }
     div[data-testid="stRadio"] label:has(input:checked) {
@@ -311,26 +311,21 @@ def show_login():
         # Subtitle - centered
         st.markdown(f'<div style="text-align: center; margin-bottom: 15px;"><p style="color: #64748B; font-size: 14px;">{t["subtitle"]}</p></div>', unsafe_allow_html=True)
         
-        # Language toggle - button-based, fully responsive
-        st.markdown('<div style="display: flex; justify-content: center; margin-bottom: 20px; white-space: nowrap;">', unsafe_allow_html=True)
+        # Language toggle - radio styled as toggle, centered
+        st.markdown('<div style="display: flex; justify-content: center; margin-bottom: 20px;">', unsafe_allow_html=True)
         
-        current_lang = st.session_state.get("language", "pt")
+        selected_lang = st.radio(
+            "",
+            options=["pt", "en"],
+            horizontal=True,
+            label_visibility="collapsed",
+            index=0 if st.session_state.get("language", "pt") == "pt" else 1,
+            key="lang_radio"
+        )
         
-        # PT button
-        pt_style = "background: #1E3A5F; color: white;" if current_lang == "pt" else "background: #E2E8F0; color: #64748B;"
-        if st.button("PT", key="btn_pt", help="Português"):
-            if current_lang != "pt":
-                st.session_state.language = "pt"
-                st.rerun()
-        st.markdown(f'<style>button[key="btn_pt"] {{ {pt_style} padding: 10px 24px; border: none; border-radius: 20px 0 0 20px; cursor: pointer; font-weight: 600; font-size: 14px; display: inline-block; }}</style>', unsafe_allow_html=True)
-        
-        # EN button
-        en_style = "background: #1E3A5F; color: white;" if current_lang == "en" else "background: #E2E8F0; color: #64748B;"
-        if st.button("EN", key="btn_en", help="English"):
-            if current_lang != "en":
-                st.session_state.language = "en"
-                st.rerun()
-        st.markdown(f'<style>button[key="btn_en"] {{ {en_style} padding: 10px 24px; border: none; border-radius: 0 20px 20px 0; cursor: pointer; font-weight: 600; font-size: 14px; display: inline-block; }}</style>', unsafe_allow_html=True)
+        if selected_lang != st.session_state.get("language", "pt"):
+            st.session_state.language = selected_lang
+            st.rerun()
         
         st.markdown('</div>', unsafe_allow_html=True)
         
