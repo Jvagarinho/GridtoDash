@@ -311,33 +311,21 @@ def show_login():
         # Subtitle - centered
         st.markdown(f'<div style="text-align: center; margin-bottom: 15px;"><p style="color: #64748B; font-size: 14px;">{t["subtitle"]}</p></div>', unsafe_allow_html=True)
         
-        # Language toggle - segmented control in wider center column
-        col1, col2, col3 = st.columns([1, 2, 1])
-        with col2:
-            st.markdown("""
-            <style>
-            div[data-testid="stColumn"]:nth-child(2) {
-                display: flex;
-                flex-direction: column;
-                align-items: center !important;
-            }
-            </style>
-            """, unsafe_allow_html=True)
-            
-            current_lang = st.session_state.get("language", "pt")
-            
-            selected_lang = st.segmented_control(
-                "",
-                options=["PT", "EN"],
-                default="PT" if current_lang == "pt" else "EN",
-                label_visibility="collapsed"
-            )
-            
-            if selected_lang:
-                new_lang = "pt" if selected_lang == "PT" else "en"
-                if new_lang != current_lang:
-                    st.session_state.language = new_lang
-                    st.rerun()
+        # Language toggle - directly after subtitle (no nested columns)
+        current_lang = st.session_state.get("language", "pt")
+        
+        selected_lang = st.segmented_control(
+            "",
+            options=["PT", "EN"],
+            default="PT" if current_lang == "pt" else "EN",
+            label_visibility="collapsed"
+        )
+        
+        if selected_lang:
+            new_lang = "pt" if selected_lang == "PT" else "en"
+            if new_lang != current_lang:
+                st.session_state.language = new_lang
+                st.rerun()
         
         # Login form - all inside one white box
         with st.container():
