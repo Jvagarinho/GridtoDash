@@ -228,45 +228,19 @@ def show_login():
     lang = st.session_state.get("language", "pt")
     t = LOGIN_TRANSLATIONS.get(lang, LOGIN_TRANSLATIONS["pt"])
     
-    # Language selector in sidebar with pill toggle buttons
+    # Language selector in sidebar expander
     with st.sidebar:
-        st.markdown("##### Idioma / Language")
-        
-        # CSS for pill toggle buttons
-        st.markdown("""
-        <style>
-        [data-testid="stSidebar"] .pill-toggle {
-            display: flex;
-            justify-content: center;
-            gap: 0;
-        }
-        [data-testid="stSidebar"] .pill-toggle button {
-            background: #E2E8F0 !important;
-            color: #64748B !important;
-            border: none !important;
-            padding: 10px 24px !important;
-            font-weight: 600 !important;
-            cursor: pointer !important;
-        }
-        [data-testid="stSidebar"] .pill-toggle button:first-child {
-            border-radius: 20px 0 0 20px !important;
-        }
-        [data-testid="stSidebar"] .pill-toggle button:last-child {
-            border-radius: 0 20px 20px 0 !important;
-        }
-        </style>
-        """, unsafe_allow_html=True)
-        
-        # Two columns for the buttons
-        col1, col2 = st.columns(2)
-        with col1:
-            if st.button("PT", use_container_width=True, key="btn_pt_sidebar"):
-                st.session_state.language = "pt"
-                st.rerun()
-        with col2:
-            if st.button("EN", use_container_width=True, key="btn_en_sidebar"):
-                st.session_state.language = "en"
-                st.rerun()
+        with st.expander("🌐 Idioma / Language", expanded=False):
+            # Two columns for the buttons
+            col1, col2 = st.columns(2)
+            with col1:
+                if st.button("PT", use_container_width=True, key="btn_pt_sidebar"):
+                    st.session_state.language = "pt"
+                    st.rerun()
+            with col2:
+                if st.button("EN", use_container_width=True, key="btn_en_sidebar"):
+                    st.session_state.language = "en"
+                    st.rerun()
         
         # Add active styling based on current language
         st.markdown(f"""
