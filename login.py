@@ -311,36 +311,30 @@ def show_login():
         # Subtitle - centered
         st.markdown(f'<div style="text-align: center; margin-bottom: 15px;"><p style="color: #64748B; font-size: 14px;">{t["subtitle"]}</p></div>', unsafe_allow_html=True)
         
-        # Language toggle - button-based (not radio) for full control
-        col1, col2, col3 = st.columns([1, 2, 1])
-        with col2:
-            # Toggle container
-            st.markdown('<div class="custom-toggle" style="display: flex; justify-content: center; margin-bottom: 20px;">', unsafe_allow_html=True)
-            
-            # Get current language
-            current_lang = st.session_state.get("language", "pt")
-            
-            # Create two columns for buttons inside the toggle
-            btn_col1, btn_col2 = st.columns([1, 1])
-            with btn_col1:
-                pt_style = "background: #1E3A5F; color: white;" if current_lang == "pt" else "background: #E2E8F0; color: #64748B;"
-                if st.button("PT", key="btn_pt", help="Português"):
-                    if current_lang != "pt":
-                        st.session_state.language = "pt"
-                        st.rerun()
-                # Inject CSS for PT button
-                st.markdown(f'<style>button[key="btn_pt"] {{ {pt_style} padding: 8px 24px; border: none; border-radius: 20px 0 0 20px; cursor: pointer; font-weight: 600; }}</style>', unsafe_allow_html=True)
-            
-            with btn_col2:
-                en_style = "background: #1E3A5F; color: white;" if current_lang == "en" else "background: #E2E8F0; color: #64748B;"
-                if st.button("EN", key="btn_en", help="English"):
-                    if current_lang != "en":
-                        st.session_state.language = "en"
-                        st.rerun()
-                # Inject CSS for EN button
-                st.markdown(f'<style>button[key="btn_en"] {{ {en_style} padding: 8px 24px; border: none; border-radius: 0 20px 20px 0; cursor: pointer; font-weight: 600; }}</style>', unsafe_allow_html=True)
-            
-            st.markdown('</div>', unsafe_allow_html=True)
+        # Language toggle - button-based, fully centered
+        st.markdown('<div style="display: flex; justify-content: center; margin-bottom: 20px;">', unsafe_allow_html=True)
+        
+        current_lang = st.session_state.get("language", "pt")
+        
+        # Two buttons side by side
+        btn1, btn2 = st.columns(2)
+        with btn1:
+            pt_style = "background: #1E3A5F; color: white;" if current_lang == "pt" else "background: #E2E8F0; color: #64748B;"
+            if st.button("PT", key="btn_pt", help="Português"):
+                if current_lang != "pt":
+                    st.session_state.language = "pt"
+                    st.rerun()
+            st.markdown(f'<style>button[key="btn_pt"] {{ {pt_style} padding: 10px 24px; border: none; border-radius: 20px 0 0 20px; cursor: pointer; font-weight: 600; font-size: 14px; }}</style>', unsafe_allow_html=True)
+        
+        with btn2:
+            en_style = "background: #1E3A5F; color: white;" if current_lang == "en" else "background: #E2E8F0; color: #64748B;"
+            if st.button("EN", key="btn_en", help="English"):
+                if current_lang != "en":
+                    st.session_state.language = "en"
+                    st.rerun()
+            st.markdown(f'<style>button[key="btn_en"] {{ {en_style} padding: 10px 24px; border: none; border-radius: 0 20px 20px 0; cursor: pointer; font-weight: 600; font-size: 14px; }}</style>', unsafe_allow_html=True)
+        
+        st.markdown('</div>', unsafe_allow_html=True)
         
         # Login form - all inside one white box
         with st.container():
