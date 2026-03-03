@@ -311,23 +311,21 @@ def show_login():
         # Subtitle - centered
         st.markdown(f'<div style="text-align: center; margin-bottom: 15px;"><p style="color: #64748B; font-size: 14px;">{t["subtitle"]}</p></div>', unsafe_allow_html=True)
         
-        # Language toggle - radio styled as toggle, centered
-        st.markdown('<div style="display: flex; justify-content: center; margin-bottom: 20px;">', unsafe_allow_html=True)
+        # Language toggle - using Streamlit's native segmented control
+        current_lang = st.session_state.get("language", "pt")
         
-        selected_lang = st.radio(
+        selected_lang = st.segmented_control(
             "",
-            options=["pt", "en"],
-            horizontal=True,
-            label_visibility="collapsed",
-            index=0 if st.session_state.get("language", "pt") == "pt" else 1,
-            key="lang_radio"
+            options=["PT", "EN"],
+            default="PT" if current_lang == "pt" else "EN",
+            label_visibility="collapsed"
         )
         
-        if selected_lang != st.session_state.get("language", "pt"):
-            st.session_state.language = selected_lang
-            st.rerun()
-        
-        st.markdown('</div>', unsafe_allow_html=True)
+        if selected_lang:
+            new_lang = "pt" if selected_lang == "PT" else "en"
+            if new_lang != current_lang:
+                st.session_state.language = new_lang
+                st.rerun()
         
         # Login form - all inside one white box
         with st.container():
