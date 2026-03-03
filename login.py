@@ -323,7 +323,7 @@ def show_login():
         st.markdown('''
         <div style="text-align: center; margin-bottom: 5px;">
             <span style="color: #64748B; font-size: 13px;">🌐 Idioma / Language </span>
-            <span style="color: #1E3A5F; font-size: 13px;">→</span>
+            <span style="color: #1E3A5F; font-size: 13px;">>></span>
         </div>
         ''', unsafe_allow_html=True)
         
