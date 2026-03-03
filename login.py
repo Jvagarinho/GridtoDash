@@ -261,6 +261,28 @@ def show_login():
     # CSS for styling elements
     st.markdown("""
     <style>
+    /* Style text input fields */
+    div[data-testid="stTextInput"] input {
+        background-color: #FFFFFF !important;
+        border: 2px solid #E2E8F0 !important;
+        border-radius: 8px !important;
+        padding: 10px !important;
+    }
+    div[data-testid="stTextInput"] input:focus {
+        border-color: #1E3A5F !important;
+        outline: none !important;
+    }
+    /* Style password input fields */
+    div[data-testid="stTextInput"] input[type="password"] {
+        background-color: #FFFFFF !important;
+        border: 2px solid #E2E8F0 !important;
+        border-radius: 8px !important;
+        padding: 10px !important;
+    }
+    div[data-testid="stTextInput"] input[type="password"]:focus {
+        border-color: #1E3A5F !important;
+        outline: none !important;
+    }
     button[key="forgot_password_btn"] {
         background: none !important;
         border: none !important;
@@ -325,7 +347,7 @@ def show_login():
             <span style="color: #64748B; font-size: 13px;">🌐 Idioma / Language </span>
             <span style="color: #1E3A5F; font-size: 13px;">>></span>
         </div>
-        ''', unsafe_allow_html=True)
+        ''', margin-bottom: 20px; unsafe_allow_html=True)
         
         # Subtitle - centered
         st.markdown(f'<div style="text-align: center; margin-bottom: 15px;"><p style="color: #64748B; font-size: 14px;">{t["subtitle"]}</p></div>', unsafe_allow_html=True)
