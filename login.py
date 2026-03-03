@@ -257,35 +257,16 @@ def show_login():
         flex-direction: column !important;
         align-items: center !important;
     }
-    /* Language toggle - center and style as pill */
-    div[data-testid="stRadio"] > div {
+    /* Language toggle wrapper - center */
+    .lang-toggle {
         display: flex !important;
-        flex-direction: row !important;
-        gap: 0 !important;
         justify-content: center !important;
+        width: 100% !important;
     }
-    div[data-testid="stRadio"] label {
-        background: #E2E8F0 !important;
-        padding: 8px 24px !important;
-        cursor: pointer !important;
-        font-weight: 600 !important;
-        font-size: 14px !important;
-        color: #64748B !important;
-        border: none !important;
-        margin: 0 !important;
-        min-width: 70px !important;
-        text-align: center !important;
-    }
-    div[data-testid="stRadio"] label:has(input:checked) {
-        background: #1E3A5F !important;
-        color: white !important;
-    }
-    div[data-testid="stRadio"] label:first-of-type {
-        border-radius: 20px 0 0 20px !important;
-        border-right: 1px solid #CBD5E1 !important;
-    }
-    div[data-testid="stRadio"] label:last-of-type {
-        border-radius: 0 20px 20px 0 !important;
+    /* Ensure segmented control is centered */
+    .lang-toggle div[data-testid="stSegmentedControl"] {
+        display: flex !important;
+        justify-content: center !important;
     }
     </style>
     """, unsafe_allow_html=True)
@@ -311,7 +292,11 @@ def show_login():
         # Subtitle - centered
         st.markdown(f'<div style="text-align: center; margin-bottom: 15px;"><p style="color: #64748B; font-size: 14px;">{t["subtitle"]}</p></div>', unsafe_allow_html=True)
         
-        # Language toggle - directly after subtitle (no nested columns)
+        # Language toggle - centered with CSS at app level
+        st.markdown("""
+        <div class="lang-toggle" style="display: flex; justify-content: center; margin-bottom: 20px;">
+        """, unsafe_allow_html=True)
+        
         current_lang = st.session_state.get("language", "pt")
         
         selected_lang = st.segmented_control(
@@ -326,6 +311,8 @@ def show_login():
             if new_lang != current_lang:
                 st.session_state.language = new_lang
                 st.rerun()
+        
+        st.markdown("</div>", unsafe_allow_html=True)
         
         # Login form - all inside one white box
         with st.container():
