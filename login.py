@@ -311,18 +311,19 @@ def show_login():
         # Subtitle - centered
         st.markdown(f'<div style="text-align: center; margin-bottom: 15px;"><p style="color: #64748B; font-size: 14px;">{t["subtitle"]}</p></div>', unsafe_allow_html=True)
         
-        # Language toggle - segmented control centered
-        st.markdown("""
-        <style>
-        [data-testid="stVerticalBlock"] > div:first-child {
-            display: flex;
-            justify-content: center;
-        }
-        </style>
-        """, unsafe_allow_html=True)
-        
-        col1, col2, col3 = st.columns([1, 2, 1])
+        # Language toggle - segmented control with equal columns
+        col1, col2, col3 = st.columns([1, 1, 1])
         with col2:
+            st.markdown("""
+            <style>
+            div[data-testid="stColumn"]:nth-child(2) {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+            }
+            </style>
+            """, unsafe_allow_html=True)
+            
             current_lang = st.session_state.get("language", "pt")
             
             selected_lang = st.segmented_control(
