@@ -289,7 +289,7 @@ def show_login():
         </div>
         ''', unsafe_allow_html=True)
         
-        # Language toggle - HTML buttons that trigger hidden Streamlit buttons
+        # Language toggle - HTML buttons with JavaScript
         current_lang = st.session_state.get("language", "pt")
         
         pt_color = "#1E3A5F" if current_lang == "pt" else "#E2E8F0"
@@ -299,19 +299,26 @@ def show_login():
         
         st.markdown(f'''
         <div style="text-align: center; margin-bottom: 15px;">
-            <button onclick="document.getElementById('btn_lang_pt').click()" style="background:{pt_color};color:{pt_text};border:none;padding:10px 24px;border-radius:20px 0 0 20px;cursor:pointer;font-weight:600;font-size:14px;">PT</button>
-            <button onclick="document.getElementById('btn_lang_en').click()" style="background:{en_color};color:{en_text};border:none;padding:10px 24px;border-radius:0 20px 20px 0;cursor:pointer;font-weight:600;font-size:14px;margin-left:-5px;">EN</button>
+            <button onclick="setLang('pt')" style="background:{pt_color};color:{pt_text};border:none;padding:10px 24px;border-radius:20px 0 0 20px;cursor:pointer;font-weight:600;font-size:14px;">PT</button>
+            <button onclick="setLang('en')" style="background:{en_color};color:{en_text};border:none;padding:10px 24px;border-radius:0 20px 20px 0;cursor:pointer;font-weight:600;font-size:14px;margin-left:-5px;">EN</button>
         </div>
+        <script>
+        function setLang(lang) {{
+            const url = new URL(window.location);
+            url.searchParams.set('lang', lang);
+            window.location.href = url.toString();
+        }}
+        </script>
         ''', unsafe_allow_html=True)
         
-        # Hidden Streamlit buttons that get clicked by JavaScript
-        if st.button("PT", key="btn_lang_pt"):
-            st.session_state.language = "pt"
-            st.rerun()
-        
-        if st.button("EN", key="btn_lang_en"):
-            st.session_state.language = "en"
-            st.rerun()
+        # Handle language from URL
+        query_params = st.query_params
+        if "lang" in query_params:
+            new_lang = query_params["lang"]
+            if new_lang in ["pt", "en"] and new_lang != current_lang:
+                st.session_state.language = new_lang
+                st.query_params.clear()
+                st.rerun()
         
         # Subtitle - centered
         st.markdown(f'<div style="text-align: center; margin-bottom: 15px;"><p style="color: #64748B; font-size: 14px;">{t["subtitle"]}</p></div>', unsafe_allow_html=True)
