@@ -310,7 +310,9 @@ def show_login():
         # Subtitle - centered
         st.markdown(f'<div style="text-align: center; margin-bottom: 15px;"><p style="color: #64748B; font-size: 14px;">{t["subtitle"]}</p></div>', unsafe_allow_html=True)
         
-        # Language toggle - pure column centering, no extra CSS
+        # Language toggle - wrapper with auto margins
+        st.markdown('<div style="width: fit-content; margin: 0 auto 20px auto;">', unsafe_allow_html=True)
+        
         col_l1, col_l2, col_l3 = st.columns([1, 1, 1])
         with col_l2:
             selected_lang = st.radio(
@@ -321,6 +323,8 @@ def show_login():
                 index=0 if lang == "pt" else 1,
                 key="lang_radio"
             )
+        
+        st.markdown('</div>', unsafe_allow_html=True)
         
         if selected_lang != lang:
             st.session_state.language = selected_lang
