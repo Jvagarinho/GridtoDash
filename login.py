@@ -228,7 +228,7 @@ def show_login():
     lang = st.session_state.get("language", "pt")
     t = LOGIN_TRANSLATIONS.get(lang, LOGIN_TRANSLATIONS["pt"])
     
-    # CSS for forgot password and language selector
+    # CSS for centering and toggle styling
     st.markdown("""
     <style>
     button[key="forgot_password_btn"] {
@@ -251,8 +251,40 @@ def show_login():
     [data-testid="stSelectbox"] > div {
         justify-content: center;
     }
-    div[data-testid="stHorizontalBlock"] {
-        justify-content: center;
+    /* Center the middle column (col2) */
+    div[data-testid="stHorizontalBlock"] > div:nth-child(2) {
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+    }
+    /* Toggle button styling for language selector */
+    div[data-testid="stRadio"] > div {
+        display: flex !important;
+        flex-direction: row !important;
+        gap: 0 !important;
+    }
+    div[data-testid="stRadio"] label {
+        background: #E2E8F0 !important;
+        padding: 10px 24px !important;
+        cursor: pointer !important;
+        font-weight: 600 !important;
+        font-size: 14px !important;
+        color: #64748B !important;
+        border: none !important;
+        margin: 0 !important;
+        min-width: 80px !important;
+        text-align: center !important;
+    }
+    div[data-testid="stRadio"] label:has(input:checked) {
+        background: #1E3A5F !important;
+        color: white !important;
+    }
+    div[data-testid="stRadio"] label:first-of-type {
+        border-radius: 20px 0 0 20px !important;
+        border-right: 1px solid #CBD5E1 !important;
+    }
+    div[data-testid="stRadio"] label:last-of-type {
+        border-radius: 0 20px 20px 0 !important;
     }
     </style>
     """, unsafe_allow_html=True)
@@ -278,9 +310,7 @@ def show_login():
         # Subtitle - centered
         st.markdown(f'<div style="text-align: center; margin-bottom: 15px;"><p style="color: #64748B; font-size: 14px;">{t["subtitle"]}</p></div>', unsafe_allow_html=True)
         
-        # Language toggle with wrapper div to ensure centering
-        st.markdown('<div class="lang-toggle-wrapper" style="display: flex; justify-content: center; margin-bottom: 20px;">', unsafe_allow_html=True)
-        
+        # Language toggle - simple radio, styled as toggle, centered by column
         selected_lang = st.radio(
             "",
             options=["pt", "en"],
@@ -289,42 +319,6 @@ def show_login():
             index=0 if lang == "pt" else 1,
             key="lang_radio"
         )
-        
-        st.markdown('</div>', unsafe_allow_html=True)
-        
-        st.markdown("""
-        <style>
-        /* Toggle button styling */
-        .lang-toggle-wrapper div[data-testid="stRadio"] > div {
-            display: flex !important;
-            flex-direction: row !important;
-            gap: 0 !important;
-        }
-        .lang-toggle-wrapper div[data-testid="stRadio"] label {
-            background: #E2E8F0 !important;
-            padding: 10px 24px !important;
-            cursor: pointer !important;
-            font-weight: 600 !important;
-            font-size: 14px !important;
-            color: #64748B !important;
-            border: none !important;
-            margin: 0 !important;
-            min-width: 80px !important;
-            text-align: center !important;
-        }
-        .lang-toggle-wrapper div[data-testid="stRadio"] label:has(input:checked) {
-            background: #1E3A5F !important;
-            color: white !important;
-        }
-        .lang-toggle-wrapper div[data-testid="stRadio"] label:first-of-type {
-            border-radius: 20px 0 0 20px !important;
-            border-right: 1px solid #CBD5E1 !important;
-        }
-        .lang-toggle-wrapper div[data-testid="stRadio"] label:last-of-type {
-            border-radius: 0 20px 20px 0 !important;
-        }
-        </style>
-        """, unsafe_allow_html=True)
         
         if selected_lang != lang:
             st.session_state.language = selected_lang
