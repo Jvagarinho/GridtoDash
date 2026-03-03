@@ -228,56 +228,57 @@ def show_login():
     lang = st.session_state.get("language", "pt")
     t = LOGIN_TRANSLATIONS.get(lang, LOGIN_TRANSLATIONS["pt"])
     
-    # Language selector in sidebar with toggle styling
+    # Language selector in sidebar with iOS-style toggle switch
     with st.sidebar:
-        st.markdown("""
-        <style>
-        /* Toggle switch styling */
-        [data-testid="stSidebar"] .lang-toggle {
-            display: flex;
-            background: #E2E8F0;
-            border-radius: 20px;
-            padding: 4px;
-            gap: 0 !important;
-        }
-        [data-testid="stSidebar"] .lang-toggle label {
-            background: transparent !important;
-            color: #64748B !important;
-            padding: 8px 20px !important;
-            font-weight: 600 !important;
-            border: none !important;
-            border-radius: 16px !important;
-            cursor: pointer !important;
-            flex: 1;
-            text-align: center;
-        }
-        [data-testid="stSidebar"] .lang-toggle label:has(input:checked) {
-            background: #1E3A5F !important;
-            color: white !important;
-        }
-        [data-testid="stSidebar"] .lang-toggle input {
-            display: none;
-        }
-        </style>
-        <div class="lang-toggle">
-        """, unsafe_allow_html=True)
+        st.markdown("##### Idioma / Language")
         
+        # Create two columns for the toggle labels
+        c1, c2 = st.columns([1, 1])
+        with c1:
+            st.markdown(f"<p style='text-align: right; margin-bottom: 5px; font-weight: {'700' if lang == 'pt' else '400'};'>PT</p>", unsafe_allow_html=True)
+        with c2:
+            st.markdown(f"<p style='text-align: left; margin-bottom: 5px; font-weight: {'700' if lang == 'en' else '400'};'>EN</p>", unsafe_allow_html=True)
+        
+        # iOS-style toggle switch using radio
         selected = st.radio(
             "",
-            options=["PT", "EN"],
-            horizontal=True,
+            options=["pt", "en"],
+            horizontal=False,
             label_visibility="collapsed",
             index=0 if lang == "pt" else 1,
-            key="lang_toggle"
+            key="lang_switch"
         )
         
-        st.markdown("</div>", unsafe_allow_html=True)
+        if selected != lang:
+            st.session_state.language = selected
+            st.rerun()
         
-        if selected:
-            new_lang = "pt" if selected == "PT" else "en"
-            if new_lang != lang:
-                st.session_state.language = new_lang
-                st.rerun()
+        # CSS to style the radio as toggle switch
+        st.markdown("""
+        <style>
+        [data-testid="stSidebar"] [data-testid="stRadio"] > div {
+            flex-direction: row !important;
+            gap: 0 !important;
+            justify-content: center;
+        }
+        [data-testid="stSidebar"] [data-testid="stRadio"] label {
+            background: #E2E8F0 !important;
+            color: #64748B !important;
+            padding: 10px 20px !important;
+            font-weight: 600 !important;
+            border: none !important;
+            cursor: pointer !important;
+        }
+        [data-testid="stSidebar"] [data-testid="stRadio"] label:first-child {
+            border-radius: 20px 0 0 20px !important;
+            background: """ + ("#1E3A5F !important; color: white !important;" if lang == "pt" else "#E2E8F0 !important;") + """
+        }
+        [data-testid="stSidebar"] [data-testid="stRadio"] label:last-child {
+            border-radius: 0 20px 20px 0 !important;
+            background: """ + ("#1E3A5F !important; color: white !important;" if lang == "en" else "#E2E8F0 !important;") + """
+        }
+        </style>
+        """, unsafe_allow_html=True)
     
     # CSS for styling elements
     st.markdown("""
