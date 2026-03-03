@@ -311,21 +311,32 @@ def show_login():
         # Subtitle - centered
         st.markdown(f'<div style="text-align: center; margin-bottom: 15px;"><p style="color: #64748B; font-size: 14px;">{t["subtitle"]}</p></div>', unsafe_allow_html=True)
         
-        # Language toggle - using Streamlit's native segmented control
-        current_lang = st.session_state.get("language", "pt")
+        # Language toggle - segmented control centered
+        st.markdown("""
+        <style>
+        [data-testid="stVerticalBlock"] > div:first-child {
+            display: flex;
+            justify-content: center;
+        }
+        </style>
+        """, unsafe_allow_html=True)
         
-        selected_lang = st.segmented_control(
-            "",
-            options=["PT", "EN"],
-            default="PT" if current_lang == "pt" else "EN",
-            label_visibility="collapsed"
-        )
-        
-        if selected_lang:
-            new_lang = "pt" if selected_lang == "PT" else "en"
-            if new_lang != current_lang:
-                st.session_state.language = new_lang
-                st.rerun()
+        col1, col2, col3 = st.columns([1, 2, 1])
+        with col2:
+            current_lang = st.session_state.get("language", "pt")
+            
+            selected_lang = st.segmented_control(
+                "",
+                options=["PT", "EN"],
+                default="PT" if current_lang == "pt" else "EN",
+                label_visibility="collapsed"
+            )
+            
+            if selected_lang:
+                new_lang = "pt" if selected_lang == "PT" else "en"
+                if new_lang != current_lang:
+                    st.session_state.language = new_lang
+                    st.rerun()
         
         # Login form - all inside one white box
         with st.container():
