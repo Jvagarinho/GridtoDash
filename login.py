@@ -289,9 +289,19 @@ def show_login():
         </div>
         ''', unsafe_allow_html=True)
         
-        # Language toggle - right after title
-        st.markdown('<div style="text-align: center; margin-bottom: 15px;">', unsafe_allow_html=True)
+        # CSS to force center segmented control
+        st.markdown("""
+        <style>
+        [data-testid="stSegmentedControl"] {
+            display: flex !important;
+            justify-content: center !important;
+            margin: 0 auto !important;
+            width: fit-content !important;
+        }
+        </style>
+        """, unsafe_allow_html=True)
         
+        # Language toggle - right after title
         current_lang = st.session_state.get("language", "pt")
         
         selected_lang = st.segmented_control(
@@ -306,8 +316,6 @@ def show_login():
             if new_lang != current_lang:
                 st.session_state.language = new_lang
                 st.rerun()
-        
-        st.markdown('</div>', unsafe_allow_html=True)
         
         # Subtitle - centered
         st.markdown(f'<div style="text-align: center; margin-bottom: 15px;"><p style="color: #64748B; font-size: 14px;">{t["subtitle"]}</p></div>', unsafe_allow_html=True)
