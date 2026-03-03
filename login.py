@@ -228,7 +228,7 @@ def show_login():
     lang = st.session_state.get("language", "pt")
     t = LOGIN_TRANSLATIONS.get(lang, LOGIN_TRANSLATIONS["pt"])
     
-    # CSS for centering and toggle styling
+    # CSS for styling and centering
     st.markdown("""
     <style>
     button[key="forgot_password_btn"] {
@@ -251,26 +251,22 @@ def show_login():
     [data-testid="stSelectbox"] > div {
         justify-content: center;
     }
-    /* Center the middle column (col2) */
+    /* Center the middle column content */
     div[data-testid="stHorizontalBlock"] > div:nth-child(2) {
         display: flex !important;
         flex-direction: column !important;
         align-items: center !important;
-        width: 100% !important;
     }
-    /* Center the radio inside the middle column */
+    /* Language toggle container - force fit content and center */
     div[data-testid="stHorizontalBlock"] > div:nth-child(2) div[data-testid="stRadio"] {
-        width: 100% !important;
-        display: flex !important;
-        justify-content: center !important;
+        width: fit-content !important;
+        margin: 0 auto !important;
     }
-    /* Toggle button styling for language selector */
+    /* Toggle button layout */
     div[data-testid="stRadio"] > div {
         display: flex !important;
         flex-direction: row !important;
         gap: 0 !important;
-        width: auto !important;
-        justify-content: center !important;
     }
     div[data-testid="stRadio"] label {
         background: #E2E8F0 !important;
@@ -319,17 +315,33 @@ def show_login():
         # Subtitle - centered
         st.markdown(f'<div style="text-align: center; margin-bottom: 15px;"><p style="color: #64748B; font-size: 14px;">{t["subtitle"]}</p></div>', unsafe_allow_html=True)
         
-        # Language toggle - use column center
-        col_l1, col_l2, col_l3 = st.columns([1, 2, 1])
-        with col_l2:
-            selected_lang = st.radio(
-                "",
-                options=["pt", "en"],
-                horizontal=True,
-                label_visibility="collapsed",
-                index=0 if lang == "pt" else 1,
-                key="lang_radio"
-            )
+        # Language toggle - centered with custom CSS
+        st.markdown("""
+        <style>
+        /* Force center language toggle */
+        div[data-testid="stRadio"] {
+            display: flex !important;
+            justify-content: center !important;
+            margin: 0 auto !important;
+            width: fit-content !important;
+        }
+        /* Horizontal layout for radio options */
+        div[data-testid="stRadio"] > div {
+            display: flex !important;
+            flex-direction: row !important;
+            gap: 0 !important;
+        }
+        </style>
+        """, unsafe_allow_html=True)
+        
+        selected_lang = st.radio(
+            "",
+            options=["pt", "en"],
+            horizontal=True,
+            label_visibility="collapsed",
+            index=0 if lang == "pt" else 1,
+            key="lang_radio"
+        )
         
         if selected_lang != lang:
             st.session_state.language = selected_lang
