@@ -228,55 +228,57 @@ def show_login():
     lang = st.session_state.get("language", "pt")
     t = LOGIN_TRANSLATIONS.get(lang, LOGIN_TRANSLATIONS["pt"])
     
-    # Language selector in sidebar with iOS-style toggle switch
+    # Language selector in sidebar with pill toggle buttons
     with st.sidebar:
         st.markdown("##### Idioma / Language")
         
-        # Create two columns for the toggle labels
-        c1, c2 = st.columns([1, 1])
-        with c1:
-            st.markdown(f"<p style='text-align: right; margin-bottom: 5px; font-weight: {'700' if lang == 'pt' else '400'};'>PT</p>", unsafe_allow_html=True)
-        with c2:
-            st.markdown(f"<p style='text-align: left; margin-bottom: 5px; font-weight: {'700' if lang == 'en' else '400'};'>EN</p>", unsafe_allow_html=True)
-        
-        # iOS-style toggle switch using radio
-        selected = st.radio(
-            "",
-            options=["pt", "en"],
-            horizontal=False,
-            label_visibility="collapsed",
-            index=0 if lang == "pt" else 1,
-            key="lang_switch"
-        )
-        
-        if selected != lang:
-            st.session_state.language = selected
-            st.rerun()
-        
-        # CSS to style the radio as toggle switch
+        # CSS for pill toggle buttons
         st.markdown("""
         <style>
-        [data-testid="stSidebar"] [data-testid="stRadio"] > div {
-            flex-direction: row !important;
-            gap: 0 !important;
+        [data-testid="stSidebar"] .pill-toggle {
+            display: flex;
             justify-content: center;
+            gap: 0;
         }
-        [data-testid="stSidebar"] [data-testid="stRadio"] label {
+        [data-testid="stSidebar"] .pill-toggle button {
             background: #E2E8F0 !important;
             color: #64748B !important;
-            padding: 10px 20px !important;
-            font-weight: 600 !important;
             border: none !important;
+            padding: 10px 24px !important;
+            font-weight: 600 !important;
             cursor: pointer !important;
         }
-        [data-testid="stSidebar"] [data-testid="stRadio"] label:first-child {
+        [data-testid="stSidebar"] .pill-toggle button:first-child {
             border-radius: 20px 0 0 20px !important;
-            background: """ + ("#1E3A5F !important; color: white !important;" if lang == "pt" else "#E2E8F0 !important;") + """
         }
-        [data-testid="stSidebar"] [data-testid="stRadio"] label:last-child {
+        [data-testid="stSidebar"] .pill-toggle button:last-child {
             border-radius: 0 20px 20px 0 !important;
-            background: """ + ("#1E3A5F !important; color: white !important;" if lang == "en" else "#E2E8F0 !important;") + """
         }
+        </style>
+        """, unsafe_allow_html=True)
+        
+        # Two columns for the buttons
+        col1, col2 = st.columns(2)
+        with col1:
+            if st.button("PT", use_container_width=True, key="btn_pt_sidebar"):
+                st.session_state.language = "pt"
+                st.rerun()
+        with col2:
+            if st.button("EN", use_container_width=True, key="btn_en_sidebar"):
+                st.session_state.language = "en"
+                st.rerun()
+        
+        # Add active styling based on current language
+        st.markdown(f"""
+        <style>
+        [data-testid="stSidebar"] button[key="btn_pt_sidebar"] {{
+            background: {'#1E3A5F' if lang == 'pt' else '#E2E8F0'} !important;
+            color: {'white' if lang == 'pt' else '#64748B'} !important;
+        }}
+        [data-testid="stSidebar"] button[key="btn_en_sidebar"] {{
+            background: {'#1E3A5F' if lang == 'en' else '#E2E8F0'} !important;
+            color: {'white' if lang == 'en' else '#64748B'} !important;
+        }}
         </style>
         """, unsafe_allow_html=True)
     
