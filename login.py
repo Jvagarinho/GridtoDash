@@ -319,6 +319,14 @@ def show_login():
         </div>
         ''', unsafe_allow_html=True)
         
+        # Language indicator pointing to sidebar
+        st.markdown('''
+        <div style="text-align: center; margin-bottom: 5px;">
+            <span style="color: #64748B; font-size: 13px;">🌐 Idioma / Language </span>
+            <span style="color: #1E3A5F; font-size: 13px;">→</span>
+        </div>
+        ''', unsafe_allow_html=True)
+        
         # Subtitle - centered
         st.markdown(f'<div style="text-align: center; margin-bottom: 15px;"><p style="color: #64748B; font-size: 14px;">{t["subtitle"]}</p></div>', unsafe_allow_html=True)
         
