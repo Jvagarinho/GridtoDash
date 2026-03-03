@@ -267,17 +267,15 @@ def show_login():
         border: 2px solid #E2E8F0 !important;
         border-radius: 8px !important;
         padding: 10px !important;
-        box-shadow: none !important;
-        outline: none !important;
     }
-    div[data-testid="stTextInput"] input:focus {
-        border-color: #1E3A5F !important;
+    div[data-testid="stTextInput"] input:focus,
+    div[data-testid="stTextInput"] input:active,
+    div[data-testid="stTextInput"] input:focus-within {
+        border: 2px solid #1E3A5F !important;
         outline: none !important;
+        outline-offset: 0 !important;
         box-shadow: none !important;
-    }
-    div[data-testid="stTextInput"] input:focus-visible {
-        outline: none !important;
-        box-shadow: none !important;
+        -webkit-outline: none !important;
     }
     /* Style password input fields */
     div[data-testid="stTextInput"] input[type="password"] {
@@ -285,26 +283,28 @@ def show_login():
         border: 2px solid #E2E8F0 !important;
         border-radius: 8px !important;
         padding: 10px !important;
-        box-shadow: none !important;
-        outline: none !important;
     }
-    div[data-testid="stTextInput"] input[type="password"]:focus {
-        border-color: #1E3A5F !important;
+    div[data-testid="stTextInput"] input[type="password"]:focus,
+    div[data-testid="stTextInput"] input[type="password"]:active,
+    div[data-testid="stTextInput"] input[type="password"]:focus-within {
+        border: 2px solid #1E3A5F !important;
         outline: none !important;
+        outline-offset: 0 !important;
         box-shadow: none !important;
-    }
-    div[data-testid="stTextInput"] input[type="password"]:focus-visible {
-        outline: none !important;
-        box-shadow: none !important;
+        -webkit-outline: none !important;
     }
     /* Remove all focus outlines globally */
-    *:focus {
+    input:focus,
+    input:active,
+    input:focus-within,
+    *:focus,
+    *:active,
+    *:focus-within {
         outline: none !important;
+        outline-offset: 0 !important;
         box-shadow: none !important;
-    }
-    *:focus-visible {
-        outline: none !important;
-        box-shadow: none !important;
+        -webkit-outline: none !important;
+        -moz-outline: none !important;
     }
     button[key="forgot_password_btn"] {
         background: none !important;
