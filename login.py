@@ -289,35 +289,20 @@ def show_login():
         </div>
         ''', unsafe_allow_html=True)
         
-        # Language toggle - HTML buttons with JavaScript
+        # Language toggle - segmented control (works but not perfectly centered)
         current_lang = st.session_state.get("language", "pt")
         
-        pt_color = "#1E3A5F" if current_lang == "pt" else "#E2E8F0"
-        pt_text = "white" if current_lang == "pt" else "#64748B"
-        en_color = "#1E3A5F" if current_lang == "en" else "#E2E8F0"
-        en_text = "white" if current_lang == "en" else "#64748B"
+        selected = st.segmented_control(
+            "",
+            options=["PT", "EN"],
+            default="PT" if current_lang == "pt" else "EN",
+            label_visibility="collapsed"
+        )
         
-        st.markdown(f'''
-        <div style="text-align: center; margin-bottom: 15px;">
-            <button onclick="setLang('pt')" style="background:{pt_color};color:{pt_text};border:none;padding:10px 24px;border-radius:20px 0 0 20px;cursor:pointer;font-weight:600;font-size:14px;">PT</button>
-            <button onclick="setLang('en')" style="background:{en_color};color:{en_text};border:none;padding:10px 24px;border-radius:0 20px 20px 0;cursor:pointer;font-weight:600;font-size:14px;margin-left:-5px;">EN</button>
-        </div>
-        <script>
-        function setLang(lang) {{
-            const url = new URL(window.location);
-            url.searchParams.set('lang', lang);
-            window.location.href = url.toString();
-        }}
-        </script>
-        ''', unsafe_allow_html=True)
-        
-        # Handle language from URL
-        query_params = st.query_params
-        if "lang" in query_params:
-            new_lang = query_params["lang"]
-            if new_lang in ["pt", "en"] and new_lang != current_lang:
+        if selected:
+            new_lang = "pt" if selected == "PT" else "en"
+            if new_lang != current_lang:
                 st.session_state.language = new_lang
-                st.query_params.clear()
                 st.rerun()
         
         # Subtitle - centered
