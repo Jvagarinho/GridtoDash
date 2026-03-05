@@ -7,12 +7,18 @@ import streamlit as st
 import os
 import base64
 import hashlib
+import secrets
 from pymongo import MongoClient
 
 
-# MongoDB connection - MUST come from environment variable for security
-MONGODB_URI = os.getenv("MONGODB_URI", "")
-MONGODB_DB = os.getenv("MONGODB_DB", "gridtodash")
+# MongoDB connection - MUST come from Streamlit secrets for security
+try:
+    MONGODB_URI = st.secrets["MONGODB_URI"]
+    MONGODB_DB = st.secrets.get("MONGODB_DB", "gridtodash")
+except Exception:
+    # Fallback to environment variables for backward compatibility
+    MONGODB_URI = os.getenv("MONGODB_URI", "")
+    MONGODB_DB = os.getenv("MONGODB_DB", "gridtodash")
 
 
 # Translations for login page
@@ -93,20 +99,100 @@ LOGIN_TRANSLATIONS = {
 def get_mongo_client():
     """Get MongoDB client"""
     try:
-        client = MongoClient(MONGODB_URI)
+        if not MONGODB_URI:
+            print("ERROR: MONGODB_URI is not set in secrets.toml")
+            return None
+        
+        print(f"Connecting to MongoDB with URI: {MONGODB_URI[:50]}...")
+        client = MongoClient(MONGODB_URI, serverSelectionTimeoutMS=10000)
+        
+        # Test connection
+        client.admin.command('ping')
+        print("✅ MongoDB connection successful")
         return client
     except Exception as e:
-        print(f"MongoDB connection error: {e}")
+        print(f"❌ MongoDB connection error: {e}")
+        import traceback
+        traceback.print_exc()
         return None
 
 
 def get_users_collection():
-    """Get users collection"""
+    """Get users collection - with fallback to local storage for development"""
+    # Check if we're in development mode (no MongoDB configured)
+    if not MONGODB_URI or MONGODB_URI == "mongodb://localhost:27017":
+        # Use local file-based storage for development/testing
+        import json
+        import os
+        dev_db_file = ".dev_users.json"
+        if not os.path.exists(dev_db_file):
+            with open(dev_db_file, 'w') as f:
+                json.dump([], f)
+        return LocalDevCollection(dev_db_file)
+    
+    # Use MongoDB
     client = get_mongo_client()
     if client:
         db = client[MONGODB_DB]
         return db.users
     return None
+
+
+class LocalDevCollection:
+    """Simple in-memory/file-based collection for development"""
+    def __init__(self, filepath):
+        self.filepath = filepath
+        self._load()
+    
+    def _load(self):
+        import json
+        try:
+            with open(self.filepath, 'r') as f:
+                self.data = json.load(f)
+        except:
+            self.data = []
+    
+    def _save(self):
+        import json
+        with open(self.filepath, 'w') as f:
+            json.dump(self.data, f, indent=2)
+    
+    def find_one(self, query):
+        self._load()
+        for user in self.data:
+            match = True
+            for key, value in query.items():
+                if user.get(key) != value:
+                    match = False
+                    break
+            if match:
+                return user
+        return None
+    
+    def insert_one(self, document):
+        self._load()
+        document['_id'] = str(len(self.data) + 1)
+        self.data.append(document)
+        self._save()
+        return type('obj', (object,), {'inserted_id': document['_id']})
+    
+    def update_one(self, query, update):
+        self._load()
+        for user in self.data:
+            match = True
+            for key, value in query.items():
+                if user.get(key) != value:
+                    match = False
+                    break
+            if match:
+                if '$set' in update:
+                    user.update(update['$set'])
+                if '$unset' in update:
+                    for key in update['$unset']:
+                        user.pop(key, None)
+                self._save()
+                return type('obj', (object,), {'modified_count': 1})
+        return type('obj', (object,), {'modified_count': 0})
 
 
 def get_logo_base64():
@@ -126,7 +212,7 @@ def hash_password(password):
 
 
 def verify_user(email, password):
-    """Verify user credentials from MongoDB"""
+    """Verify user credentials from MongoDB or local storage"""
     password_hash = hash_password(password)
     
     collection = get_users_collection()
@@ -236,11 +322,11 @@ def show_login():
         # Two columns for the buttons
         col1, col2 = st.columns(2)
         with col1:
-            if st.button("PT", use_container_width=True, key="btn_pt_sidebar"):
+            if st.button("PT", width='stretch', key="btn_pt_sidebar"):
                 st.session_state.language = "pt"
                 st.rerun()
         with col2:
-            if st.button("EN", use_container_width=True, key="btn_en_sidebar"):
+            if st.button("EN", width='stretch', key="btn_en_sidebar"):
                 st.session_state.language = "en"
                 st.rerun()
         
@@ -397,7 +483,7 @@ def show_login():
             email = st.text_input(t["email"], key="login_email")
             password = st.text_input(t["password"], type="password", key="login_password")
             
-            if st.button(t["login_button"], type="primary", use_container_width=True):
+            if st.button(t["login_button"], type="primary", width='stretch'):
                 if email and password:
                     user = verify_user(email, password)
                     if user:
@@ -460,7 +546,7 @@ def show_login():
                 
                 col_r1, col_r2 = st.columns([1, 1])
                 with col_r1:
-                    if st.button(t["recover_button"], type="primary", use_container_width=True):
+                    if st.button(t["recover_button"], type="primary", width='stretch'):
                         if recover_email:
                             result = generate_recovery_code(recover_email)
                             if result.get("success"):
@@ -474,7 +560,7 @@ def show_login():
                         else:
                             st.error(t["error_empty_fields"])
                 with col_r2:
-                    if st.button(t["back_to_login"], use_container_width=True):
+                    if st.button(t["back_to_login"], width='stretch'):
                         st.session_state.show_recovery = False
                         st.rerun()
         
@@ -504,7 +590,7 @@ def show_login():
                 
                 col_r1, col_r2 = st.columns([1, 1])
                 with col_r1:
-                    if st.button(t["reset_button"], type="primary", use_container_width=True):
+                    if st.button(t["reset_button"], type="primary", width='stretch'):
                         if reset_code and new_pass and confirm_pass:
                             if new_pass != confirm_pass:
                                 st.error(t["error_passwords_dont_match"])
@@ -529,7 +615,7 @@ def show_login():
                         else:
                             st.error(t["error_empty_fields"])
                 with col_r2:
-                    if st.button(t["back_to_login"], use_container_width=True):
+                    if st.button(t["back_to_login"], width='stretch'):
                         st.session_state.show_reset = False
                         if hasattr(st.session_state, 'recovery_code'):
                             del st.session_state.recovery_code
@@ -551,7 +637,7 @@ def show_login():
             new_password = st.text_input(t["new_password"], type="password", key="signup_password")
             confirm_password = st.text_input(t["confirm_password"], type="password", key="signup_confirm")
             
-            if st.button(t["signup_button"], use_container_width=True):
+            if st.button(t["signup_button"], width='stretch'):
                 if new_email and new_password and confirm_password:
                     if new_password != confirm_password:
                         st.error(t["error_passwords_dont_match"])
