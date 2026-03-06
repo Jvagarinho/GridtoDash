@@ -65,6 +65,7 @@ TRANSLATIONS = {
         "select_y_axis": "Selecionar coluna para eixo Y",
         "select_columns_pdf": "Selecionar colunas para o relatório PDF",
         "about": "Sobre",
+        "sidebar_tooltip": "Abrir menu de idiomas",
     },
     "en": {
         "app_title": "GridToDash",
@@ -99,6 +100,7 @@ TRANSLATIONS = {
         "select_y_axis": "Select column for Y-axis",
         "select_columns_pdf": "Select columns for PDF report",
         "about": "About",
+        "sidebar_tooltip": "Open language menu",
     }
 }
 
@@ -324,6 +326,7 @@ st.markdown("""
         border-radius: 8px !important;
         opacity: 1 !important;
         visibility: visible !important;
+        position: relative !important;
     }
     [data-testid="stSidebarCollapseButton"]:hover {
         background: #047857 !important;
@@ -336,6 +339,56 @@ st.markdown("""
         color: #FFFFFF !important;
         opacity: 1 !important;
     }
+
+    /* Fixed tooltip for sidebar toggle button */
+    [data-testid="stSidebarCollapseButton"]::after {
+        content: attr(data-tooltip);
+        position: absolute;
+        bottom: -40px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: #FFFFFF !important;
+        color: #1E3A5F !important;
+        padding: 8px 16px;
+        border-radius: 8px;
+        font-size: 13px;
+        font-weight: 600;
+        white-space: nowrap;
+        opacity: 0;
+        pointer-events: none;
+        z-index: 9999 !important;
+        box-shadow: 0 4px 20px rgba(30, 58, 95, 0.25);
+        border: 1px solid #1E3A5F;
+        transition: opacity 0.3s ease;
+    }
+
+    /* Show tooltip when sidebar is CLOSED (button has aria-label="Open sidebar") */
+    [data-testid="stSidebarCollapseButton"][aria-label="Open sidebar"]::after {
+        opacity: 1;
+    }
+
+    /* Hide tooltip when sidebar is OPEN (button has aria-label="Close sidebar") */
+    [data-testid="stSidebarCollapseButton"][aria-label="Close sidebar"]::after {
+        opacity: 0;
+    }
+
+    /* Alternative: Inline label element for better compatibility */
+    .sidebar-tooltip-label {
+        position: fixed !important;
+        top: 20px !important;
+        left: 20px !important;
+        background: #FFFFFF !important;
+        color: #1E3A5F !important;
+        padding: 8px 16px !important;
+        border-radius: 8px !important;
+        font-size: 13px !important;
+        font-weight: 600 !important;
+        white-space: nowrap !important;
+        z-index: 9999 !important;
+        box-shadow: 0 4px 20px rgba(30, 58, 95, 0.25) !important;
+        border: 1px solid #1E3A5F !important;
+        display: none !important;
+    }
     
     /* Better mobile sidebar behavior */
     @media (max-width: 768px) {
@@ -344,61 +397,57 @@ st.markdown("""
             max-width: 200px !important;
         }
     }
+    
     </style>
     
     <script>
-    function getCurrentLang() {{
-        // Check which language button is styled as primary
-        const buttons = document.querySelectorAll('[data-testid="stSidebar"] button');
-        for (let btn of buttons) {{
-            if (btn.innerText === 'PT' && btn.getAttribute('kind') === 'secondary') {{
-                return 'pt';
-            }}
-            if (btn.innerText === 'EN' && btn.getAttribute('kind') === 'secondary') {{
-                return 'en';
-            }}
-        }}
-        return 'pt'; // default
-    }}
-    
-    function translateUploader() {{
-        const lang = window.currentLang || 'pt';
-        const texts = {{
-            'pt': {{ drag: 'Arraste e solte o ficheiro aqui', limit: 'Limite 200MB por ficheiro', browse: 'Procurar ficheiros' }},
-            'en': {{ drag: 'Drag and drop file here', limit: 'Limit 200MB per file', browse: 'Browse files' }}
-        }};
-        
-        // Translate span with class st-emotion-cache-ycmcfb
-        const spans = document.querySelectorAll('.st-emotion-cache-ycmcfb span');
-        for (let span of spans) {{
-            if (span.innerText && span.innerText.trim() !== '') {{
-                span.innerText = texts[lang].drag;
-            }}
-        }}
-        
-        // Translate p tag
-        const ps = document.querySelectorAll('.st-emotion-cache-ycmcfb p');
-        for (let p of ps) {{
-            if (p.innerText && (p.innerText.includes('200MB') || p.innerText.includes('Limit'))) {{
-                p.innerText = texts[lang].limit + ' • XLSX, CSV';
-            }}
-        }}
-        
-        // Translate button
-        const buttons = document.querySelectorAll('.st-emotion-cache-ycmcfb button');
-        for (let btn of buttons) {{
-            if (btn.innerText && btn.innerText.includes('Browse')) {{
-                btn.innerText = texts[lang].browse;
-            }}
-        }}
-    }}
-    
-    // Set language from Python and run translation
     window.currentLang = "{st.session_state.get('language', 'pt')}";
-    window.addEventListener('load', function() {{
-        setTimeout(translateUploader, 500);
+    
+    function getCurrentLang() {
+        const buttons = document.querySelectorAll('[data-testid="stSidebar"] button');
+        for (let btn of buttons) {
+            if (btn.innerText === 'PT' && btn.getAttribute('kind') === 'secondary') {
+                return 'pt';
+            }
+            if (btn.innerText === 'EN' && btn.getAttribute('kind') === 'secondary') {
+                return 'en';
+            }
+        }
+        return 'pt';
+    }
+
+    function translateUploader() {
+        const lang = getCurrentLang();
+        const texts = {
+            'pt': { drag: 'Arraste e solte o ficheiro aqui', limit: 'Limite 200MB por ficheiro', browse: 'Procurar ficheiros' },
+            'en': { drag: 'Drag and drop file here', limit: 'Limit 200MB per file', browse: 'Browse files' }
+        };
+        
+        const spans = document.querySelectorAll('.st-emotion-cache-ycmcfb span');
+        for (let span of spans) {
+            if (span.innerText && span.innerText.trim() !== '') {
+                span.innerText = texts[lang].drag;
+            }
+        }
+        
+        const ps = document.querySelectorAll('.st-emotion-cache-ycmcfb p');
+        for (let p of ps) {
+            if (p.innerText && (p.innerText.includes('200MB') || p.innerText.includes('Limit'))) {
+                p.innerText = texts[lang].limit + ' • XLSX, CSV';
+            }
+        }
+        
+        const buttons = document.querySelectorAll('.st-emotion-cache-ycmcfb button');
+        for (let btn of buttons) {
+            if (btn.innerText && btn.innerText.includes('Browse')) {
+                btn.innerText = texts[lang].browse;
+            }
+        }
+    }
+    
+    window.addEventListener('load', function() {
         setInterval(translateUploader, 2000);
-    }});
+    });
     </script>
 """, unsafe_allow_html=True)
 
@@ -616,6 +665,31 @@ def main():
     except Exception:
         pass
     
+    # Show language hint on all pages (including login)
+    st.markdown(f"""
+    <div style="
+        position: fixed;
+        top: 65px;
+        left: 15px;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: rgba(30, 58, 95, 0.06);
+        color: #64748B;
+        padding: 6px 12px;
+        border-radius: 4px;
+        font-size: 12px;
+        font-weight: 500;
+        border: 1px solid rgba(30, 58, 95, 0.1);
+        z-index: 999;
+        line-height: 1.4;
+    ">
+        <img src="https://assets.streamlinehq.com/image/private/w_300,h_300,ar_1/f_auto/v1/icons/arrows/arrow-up-l7bd1fogbplp3aovv0zsd.png/arrow-up-jrbe2zatu1h955lgig3i.png" width="16" style="filter: grayscale(100%) brightness(80%);">
+        <span style="font-size: 14px;"></span>
+        <span><strong>Idioma / Language</strong></span>
+    </div>
+    """, unsafe_allow_html=True)
+    
     # Check authentication - show login if not authenticated
     if not st.session_state.get("authenticated"):
         show_login()
@@ -663,6 +737,21 @@ def main():
         st.markdown(f"*{get_translation('sidebar_built_with')}*")
     
     # Main Content
+    st.markdown("### TESTE VISUAL - Esta mensagem deve aparecer no topo da página")
+    
+    st.markdown(f"""
+    <div style="
+        background: red;
+        color: white;
+        padding: 20px;
+        font-size: 24px;
+        font-weight: bold;
+        margin: 10px 0;
+    ">
+        🚨 LEGENDA DE TESTE - Deve aparecer aqui!
+    </div>
+    """, unsafe_allow_html=True)
+    
     st.markdown(f"""
     <div class="hero-section">
         <h1 class="main-title">{get_translation('hero_title')}</h1>
