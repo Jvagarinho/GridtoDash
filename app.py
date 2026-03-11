@@ -737,21 +737,6 @@ def main():
         st.markdown(f"*{get_translation('sidebar_built_with')}*")
     
     # Main Content
-    st.markdown("### TESTE VISUAL - Esta mensagem deve aparecer no topo da página")
-    
-    st.markdown(f"""
-    <div style="
-        background: red;
-        color: white;
-        padding: 20px;
-        font-size: 24px;
-        font-weight: bold;
-        margin: 10px 0;
-    ">
-        🚨 LEGENDA DE TESTE - Deve aparecer aqui!
-    </div>
-    """, unsafe_allow_html=True)
-    
     st.markdown(f"""
     <div class="hero-section">
         <h1 class="main-title">{get_translation('hero_title')}</h1>
